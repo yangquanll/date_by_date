@@ -130,15 +130,15 @@ int main(int argc, char *argv[]){
     g_timeout_add_seconds (1, (GSourceFunc)refresh_position, &data);
 
     /* Set the source to play */
-    g_object_set (G_OBJECT (data.source), "location", "/home/liqiang/Videos/sintel_trailer-480p.webm", NULL);
-
+   // g_object_set (G_OBJECT (data.source), "location", "/home/liqiang/Videos/sintel_trailer-480p.webm", NULL);
+	data.pipeline = gst_parse_launch ("playbin uri=rtsp://admin:ste12345@10.112.2.125/h264/ch01/main/av_stream", NULL);  
     /* Start playing */
     ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) 
     {
         gst_element_set_state (data.pipeline, GST_STATE_NULL);
         gst_object_unref (data.pipeline);
-        return -1;
+       return -1;
     }
     return app.exec();
 }
