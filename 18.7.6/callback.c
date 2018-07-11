@@ -1,9 +1,8 @@
 #include <stdio.h>
-
 int add_ret() ;
 int multiply();
 
-int add(int a , int b , int (*add_value)())
+int add(int a , int b , int (*add_value)()) //
 {
 	return (*add_value)(a,b);
 }
@@ -16,7 +15,7 @@ int multiplk_p(int c,int d,int (*multip_date)())
 int main(void)
 {
 	int sum = add(3,4,add_ret);
-	int multip = multiplk_p(6,5,multiply);
+    int multip = multiplk_p(6,5,multiply);
 	printf("sum:%d\n",sum);
 	printf("mutil:%d\n",multip);
 	return 0 ;
