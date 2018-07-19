@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 	gst_init (&argc, &argv);  
 
 	/* Build the pipeline */  
-	pipeline = gst_parse_launch ("playbin uri=rtsp://admin:ste12345@10.112.2.125/h264/ch01/main/av_stream", NULL);  
-
+	pipeline = gst_parse_launch ("playbin uri=rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov", NULL);  
+	printf("pip = %d\n",pipeline);
 	/* Start playing */  
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);  
 
