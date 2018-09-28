@@ -129,9 +129,10 @@ int main(int argc, char *argv[]){
     g_signal_connect (data.demuxer, "pad-added", G_CALLBACK (on_pad_added),  &data);
     g_timeout_add_seconds (1, (GSourceFunc)refresh_position, &data);
 
-    /* Set the source to play */
-    g_object_set (G_OBJECT (data.source), "location", "/home/yq/Downloads/phfx_4KHD_VP9TestFootage/yq.webm", NULL);
+	/* Set the source to play */
+    g_object_set (G_OBJECT (data.source), "location", "./yq.webm", NULL);
 
+printf(" yq	 --> set path \n");
     /* Start playing */
     ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) 
