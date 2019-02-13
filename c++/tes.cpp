@@ -7,17 +7,17 @@ int main()
 	try{
 		int a,b;    char s;
 		cin>>a>>b>>s;
-		if(s=='/'){
+		if(s=='y'){
 			if(b==1) 
 			{
-				cout<< "throw "<<endl;
+				cout<< "throw b "<<endl;
 //				throw "yyyyyyyyyyyyyyyyyyyyyyyyyyq";
 				throw b;
 // 这里throw 的型 回在后面的catch 捕捉到 !!!!!!!!!!!!!!!
 
-				cout<< "throw "<<endl;
+				cout<< "throw b end "<<endl;
 			}
-			cout<<a<<"/"<<b<<"="<<a/b<<endl;
+			cout<<a<<"/"<<b<<"="<<a<<b<<endl;
 		}
 		else
 			if(s=='%') {   
