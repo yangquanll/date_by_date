@@ -366,4 +366,11 @@ for w in va:
 for i in range(len(va)): 
     print(i,va[i])
 
-
+for i  in range(len(va)):
+    print(i)
+    if i == "qq":
+        break;
+else:
+    print ("for")
+    
+        
