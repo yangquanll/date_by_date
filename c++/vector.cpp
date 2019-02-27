@@ -9,6 +9,9 @@
 	clear();//清除容器中所以数据
 	push_back(i); //尾部 install data
 	pop.back(i)   //delete top data
+	
+	#include <algorithm>
+	
  *
  */
 #include <iostream>
@@ -21,10 +24,15 @@ int main()
 {
 
 vector<int> vec;
+	
+vector<int>:: iterator it;
+vector<int>::iterator begin=vec.begin();
+vector<int>::iterator end=vec.end();
+	
 #if 1 // ;like array[]
-for(int i =0;i<10;i++)
+for(int i =0;i < 10;++i)
 {
-	vec.push_back(i); //尾部 install data
+	vec.push_back(i); //尾部 install data 并没有头插
 	cout<<vec[i]<<",";
 }
 	
@@ -32,7 +40,8 @@ for(int i =0;i<10;i++)
 cout <<"push_back end "<<endl;
 for(int a = 0;a < 6; a++)
 {
-	vec.pop_back();
+	//vec.pop_back(); //尾删 例如 尾插 0-9  这里 尾删 4-9
+
 	cout<<vec[a]<<",";
 	
 }
@@ -42,11 +51,8 @@ for(int a = 0;a < 6; a++)
 **/
 cout <<"pop_back"<<endl;
 	
-vector<int>:: iterator it;
-vector<int>::iterator begin=vec.begin();
-vector<int>::iterator end=vec.end();
-
-for(it = begin;it != end;++it)
+// 遍历
+for(it = vec.begin();it != vec.end();++it)
 {
 	//*it =3; error static 
 	cout<< "iterator vec = "<<*it<<endl;
@@ -57,14 +63,28 @@ for(int i =0 ; i < vec.size();i++) //size_t
 	cout<< " at fu = "<< vec.at(i)<<endl;	
 }
 	
-
-	
-	
-	
 // 排序
-// 遍历
+reverse(vec.begin(), vec.end());//交换 
+
+for(it = vec.begin();it != vec.end();++it)
+{
+	//*it =3; error static 
+	cout<< "reverse iterator vec = "<<*it<<endl;
+}
+
+sort(vec.begin(), vec.end()); //从小到大
+for(it = vec.begin();it != vec.end();++it)
+{
+	//*it =3; error static 
+	cout<< "sort iterator vec = "<<*it<<endl;
+}
+
 // 查找
 	it = find( vec.begin() ,vec.end(),3);
+	if(it != vec.end())
+	{
+		cout<<"find = "<< *it<<endl;
+	}
 // 释放操作
 
 #endif
