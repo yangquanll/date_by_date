@@ -12,6 +12,7 @@
 	pop.back(i)   //delete top data
 	capacity（）// 返回vector的实际存储空间的大小，这个一般大于或等于vector元素个数，注意与size()函数的区别
 	#include <algorithm> //使用 swap 
+	erase()// 直接用 会产生 野指针问题 配合 remove_if() 使用
 	
 	vector<int> A;  //创建一个空的的容器
     vector<int> B(10,100); //创建一个10个元素,每个元素值为100
@@ -28,8 +29,19 @@
 #include <algorithm>
 using namespace std;
 
+class car
+{
+  public:
+	int sp;
+};
+
 bool cmp(int a,int b){
     return a > b;
+}
+
+bool cmpp(car& c)
+{
+	return c.sp >100;
 }
 
 int main()
@@ -127,35 +139,70 @@ for(it = vc_yq.begin();it != vc_yq.end();++it)
 		cout<<"find = "<< *it<<endl;
 	}
 	
-// use unique 去重前 先排序
+// use unique 去重前 先排序 //下面是 去重 两个相同的 元素
 cout << "=== unique 使用 ==="<<endl;
-int a[]={6,10,4,6,6,8,100,300,66};
-vector<int> unq(a,a+9);
+int a[]={1,200,3,470,9,4,4,100,100,300,600};
+vector<int> unq(a,a+11);
 sort(unq.begin(),unq.end());
-int t =0;
+
 for(it = unq.begin();it != unq.end();++it)
+{ 
+	cout<< " sort end = "<<*it<<endl;
+}
+
+int t =0,count = 0;
+
+for(auto i = unq.begin();i != unq.end();++i)
 {
-	if(t > unq.capacity() )
-	{
-		break;
-	}
 	++t;
-	if(*it == *(unq.begin()+t))
+	//cout<< " *(unq.begin()+1) unique  iterator unq = "<<*(unq.begin()+t)<<"  *it == "<< *it<< " unq.capacity() = " << unq.capacity()<< "  unq.size() = "<<unq.size()<<endl;
+	cout<< " *i = "<<*i<<"  *(i+1) = "<<*(i+1)<< "  unq.size() = "<<unq.size() << " t ="<< t <<" count ="<<count<<endl;
+	if((*i == *(i + 1))  && (t < unq.size()-1))
 	{
-		cout<< " *(unq.begin()+1) unique  iterator unq = "<<*(unq.begin()+t)<<endl;
-		unq.erase(it);
+		
+	    i =unq.erase(i);
+		cout << "i  ="<<*i<<endl;	
+		//i--;
+		++count;
+		//cout<< " *(unq.begin()+1) unique  iterator unq = "<<*(unq.begin()+t)<<endl;
+		//cout << "unq.erase(it) "<<*(unq.erase(it))<<endl;	
 	}
-	cout<<" t = "<<t<<endl;
-	cout<< " erase unique  iterator unq = "<<*it<<endl;
+	//if(count)
+	//cout<< " erase unique  iterator unq = "<<*it<<"  *(it+1) = "<<*(it+1)<<endl;
+
+}
+#if 0
+for(t= 0;t<unq.size();++t)
+{
+
+	//cout<< " *(unq.begin()+1) unique  iterator unq = "<<*(unq.begin()+t)<<"  *it == "<< *it<< " unq.capacity() = " << unq.capacity()<< "  unq.size() = "<<unq.size()<<endl;
+	cout<< "unq[t] = "<<unq[t]<<"  unq[t+1] = "<<unq[t+1]<<endl;
+	
+
+	if((unq[t] == unq[t+1]) && (t < unq.size()-1))
+	{
+		//cout<< " *(unq.begin()+1) unique  iterator unq = "<<*(unq.begin()+t)<<endl;
+		++count;
+		cout << "unq.erase(it) "<<*(unq.erase(unq.begin()+t))<<endl;
+	}
+	//if(count)
+	//cout<< " erase unique  iterator unq = "<<*it<<"  *(it+1) = "<<*(it+1)<<endl;
 
 }	
-	
-for(it = unq.begin();it != unq.end();++it)
+#endif
+cout<< " =============== ===============" <<endl;
+//remove_if use
+vector<car> cars;
+
+cars.erase( std::remove_if(std::begin(cars), std::end(cars), cmpp), std::end(cars) );
+/*
+for(it = cars.begin();it != cars.end();++it)
 { 
 	cout<< " befor unique  iterator unq = "<<*it<<endl;
 }
-cout<< " =============== " <<endl;
-unique(unq.begin(),unq.end());
+*/
+cout<< " =============== ===============" <<endl;
+//unique(unq.begin(),unq.end());
 for(it = unq.begin();it != unq.end();++it)
 { 
 	cout<< " after unique  iterator unq = "<<*it<<endl;
