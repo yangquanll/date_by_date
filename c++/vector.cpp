@@ -33,6 +33,11 @@ class car
 {
   public:
 	int sp;
+	car(int s)
+	{
+		sp =s;
+	}
+	~ car(){};
 };
 
 bool cmp(int a,int b){
@@ -192,15 +197,21 @@ for(t= 0;t<unq.size();++t)
 #endif
 cout<< " =============== ===============" <<endl;
 //remove_if use
+//car *s;
+//s->sp =1000;
 vector<car> cars;
+vector<car> :: iterator ite;
+cars.push_back(120); //call 构造函数
+cars.push_back(130);
+cars.push_back(10);
 
 cars.erase( std::remove_if(std::begin(cars), std::end(cars), cmpp), std::end(cars) );
-/*
-for(it = cars.begin();it != cars.end();++it)
+
+for(ite = cars.begin();ite != cars.end();++ite)
 { 
-	cout<< " befor unique  iterator unq = "<<*it<<endl;
+	cout<< " befor unique  iterator unq = "<<(*ite).sp<<endl;
 }
-*/
+
 cout<< " =============== ===============" <<endl;
 //unique(unq.begin(),unq.end());
 for(it = unq.begin();it != unq.end();++it)
