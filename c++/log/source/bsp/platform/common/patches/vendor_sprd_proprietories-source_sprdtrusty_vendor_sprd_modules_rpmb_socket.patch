@@ -1,0 +1,38 @@
+diff --git a/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/Android.mk b/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/Android.mk
+index 7039159..8dface0 100644
+--- a/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/Android.mk
++++ b/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/Android.mk
+@@ -25,6 +25,10 @@ LOCAL_SHARED_LIBRARIES := \
+         liblog \
+         libcutils
+ 
++ifeq ($(TRUSTKERNEL_TEE_SUPPORT), yes)
++LOCAL_CFLAGS += -DVRPMB
++endif
++
+ LOCAL_MODULE_TAGS := optional
+ include $(BUILD_EXECUTABLE)
+ #endif
+diff --git a/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/rpmb_server.c b/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/rpmb_server.c
+index 668c49b..bf8cb0b 100644
+--- a/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/rpmb_server.c
++++ b/vendor/sprd/proprietories-source/sprdtrusty/vendor/sprd/modules/rpmb_socket/rpmb_server.c
+@@ -495,10 +495,18 @@ int main(void)
+                 continue;
+             }
+ 
++#ifdef VRPMB
++            ret = 0;
++#else
+             ret = program_rpmb_key(rpmb_key, RPMB_KEY_LEN);
++#endif
+             write(cfd, &ret, sizeof(ret));
+         } else if (IS_WR_RPMB_KEY == command){
++#ifdef VRPMB
++            ret = -1;
++#else
+             ret = is_rpmb_program_key();
++#endif
+             write(cfd, &ret, sizeof(ret));
+         } else if (RUN_STORAGEPROXY == command){
+             ret = start_storageproxyd();

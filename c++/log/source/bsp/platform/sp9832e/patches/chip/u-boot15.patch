@@ -1,0 +1,56 @@
+diff --git a/AndroidUBoot.mk b/AndroidUBoot.mk
+index 64b0c88..2a54614 100644
+--- a/AndroidUBoot.mk
++++ b/AndroidUBoot.mk
+@@ -78,6 +78,16 @@ UBOOT_PCTOOL_CHECK_WRITE_PROTECT_FLAG := -DCONFIG_PCTOOL_CHECK_WRITE_PROTECT
+ endif
+ export UBOOT_PCTOOL_CHECK_WRITE_PROTECT_FLAG
+ 
++ifeq ($(strip $(BOARD_TRUSTKERNEL_TEE)), true)
++UBOOT_VRPMB_FLAG := -DVRPMB
++endif
++export UBOOT_VRPMB_FLAG
+ .PHONY: $(UBOOT_OUT)
+ $(UBOOT_OUT):
+ 	@echo "Start U-Boot build board $(UBOOT_DEFCONFIG)"
+diff --git a/config.mk b/config.mk
+index 98ec623..57ef979 100644
+--- a/config.mk
++++ b/config.mk
+@@ -90,6 +90,8 @@ PLATFORM_CPPFLAGS += $(UBOOT_ARMV7_LPAE_FLAG)
+ PLATFORM_CPPFLAGS += $(UBOOT_KERNEL_CMDLINE_FLAG)
+ PLATFORM_CPPFLAGS += $(UBOOT_PCTOOL_CHECK_MULTI_FIXNV_FLAG)
+ PLATFORM_CPPFLAGS += $(UBOOT_PCTOOL_CHECK_WRITE_PROTECT_FLAG)
++PLATFORM_CPPFLAGS += $(UBOOT_VRPMB_FLAG)
+ LDFLAGS += $(PLATFORM_LDFLAGS)
+ LDFLAGS_FINAL += -Bstatic
+ 
+diff --git a/lib/trustzone/uboot_drv_rpmb.c b/lib/trustzone/uboot_drv_rpmb.c
+index f468f9e..db65626 100644
+--- a/lib/trustzone/uboot_drv_rpmb.c
++++ b/lib/trustzone/uboot_drv_rpmb.c
+@@ -12,7 +12,11 @@ static int is_rpmb_key __attribute__((aligned(4096)));
+ 
+ int uboot_set_rpmb_size()
+ {
++#ifdef VRPMB
++    rpmb_size = 1U << 20;
++#else
+     rpmb_size = emmc_get_capacity(PARTITION_RPMB);
++#endif
+     printf("%s: rpmb size %lld\n", __func__, rpmb_size);
+     smc_param *param = tee_common_call(FUNCTYPE_SET_RPMB_SIZE, (uint32_t)(&rpmb_size), sizeof(rpmb_size));
+ 
+@@ -22,8 +26,12 @@ int uboot_set_rpmb_size()
+ 
+ int uboot_is_wr_rpmb_key()
+ {
++#ifdef VRPMB
++    is_rpmb_key = 1;
++#else
+     is_rpmb_key = -1;
+     is_rpmb_key = is_wr_rpmb_key();
++#endif
+     if (0 == is_rpmb_key) {
+         printf("%s rpmb unwritten, call tos \n", __func__);
+         smc_param *param = tee_common_call(FUNCTYPE_IS_WR_RPMB_KEY, (uint32_t)(&is_rpmb_key), sizeof(is_rpmb_key));
