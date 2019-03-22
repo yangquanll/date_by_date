@@ -1,9 +1,11 @@
-/*
- * Log.cpp
- *
- *  Created on: Apr 23, 2009
- *      Author: ZhaoXiaoguang
- */
+/***
+* 一般的软件工程中，日志的作用都非常大，下面介绍一种c/c++代码生成日志的方法
+* 支持带有时间戳；写入文件并不造成覆盖；支持多线程，进程
+* 封装成 3种格式：debug,error,inf,三种输出
+* 自定义 log文件的位置
+* 自定义定义log文件的大小 超过则删除
+*
+***/
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -26,27 +28,27 @@
 
 
 #include "Log.h"
-#define ccprintf(log_type, str, args...) do { string format; format.append("%s,%s,").append(str);   \
+#define CPRINT(log_type, str, args...) do { string format; format.append("%s,%s,").append(str);   \
                switch(log_type)    \
                {   \
-               case DEBUG_LOG: Log::log.print(DEBUG_LOG, format.c_str(), "[DBG]", "[yqqq]",## args);break;  \
-               case OPERATE_LOG:Log::log.print(OPERATE_LOG, format.c_str(), "[OPR]", "[yq]", ## args);break;   \
-               case ERROR_LOG:Log::log.print(ERROR_LOG, format.c_str(), "[ERR]", "[yq]", ## args);break;   \
-               default :   Log::log.print(DEBUG_LOG, format.c_str(), "[DBG]", "[yq]", ## args);break;  \
+               case DEBUG_LOG: Log::log.print(DEBUG_LOG, format.c_str(), "[DBG]", "[ylq]",## args);break;  \
+               case OPERATE_LOG:Log::log.print(OPERATE_LOG, format.c_str(), "[OPR]", "[ylq]", ## args);break;   \
+               case ERROR_LOG:Log::log.print(ERROR_LOG, format.c_str(), "[ERR]", "[ylq]", ## args);break;   \
+               default :   Log::log.print(DEBUG_LOG, format.c_str(), "[DBG]", "[ylq]", ## args);break;  \
                }}while(0)
 
 
 using namespace std;
 
 Log Log::log;
-
+/*
 ostream& nl(ostream& os){
 	string s = Log::log.str();
 	Log::log.str("");
 	Log::log.print(s);
 	return os;
 }
-
+*/
 void Log::start(char *log_path) {
 
 	log_rootpath.clear();
@@ -58,10 +60,10 @@ void Log::start(char *log_path) {
 
 	mLogFile = openLogFile(DEBUG_LOG);
 
-	mLogFile_operate = openLogFile(OPERATE_LOG);
-	mLogFile_error = openLogFile(ERROR_LOG);
-	mLogFile_hazard = openLogFile(HAZARD_LOG);
-	mLogFile_devFault = openLogFile(DEV_FAULT_LOG); //yq
+//	mLogFile_operate = openLogFile(OPERATE_LOG);
+//	mLogFile_error = openLogFile(ERROR_LOG);
+ //       mLogFile_hazard = openLogFile(HAZARD_LOG);
+ //       mLogFile_devFault = openLogFile(DEV_FAULT_LOG);
 //	mComPort = openComPort();
 	mComPort = -1;
     this->displayHex();
@@ -229,11 +231,11 @@ void Log::writeLogFile(int logtype, const char *data, int length)
 	{
 		mLogFile_temp = mLogFile_error;
 	}
-	else if (logtype == HAZARD_LOG)
+        else if (logtype == HAZARD_LOG)
 	{
 		mLogFile_temp = mLogFile_hazard;
-	}
-	else if (logtype == DEV_FAULT_LOG)
+        }
+        else if (logtype == DEV_FAULT_LOG)
 	{
 		mLogFile_temp = mLogFile_devFault;
 	}
@@ -368,25 +370,22 @@ int Log::openComPort()
 
 int Log::openLogFile(int logtype) {
 
-	//string logFile = "/vsftpd/pub/data/incoming/log/log.txt";
-	//string loglogFile = "/vsftpd/pub/data/incoming/log/log_log.txt";
-	//string log1File = "/vsftpd/pub/data/incoming/log/log1.txt";
-	string logFile_operate;
-	logFile_operate.append(log_rootpath).append("/log_operate.txt");
+        string logFile_operate;
+        //logFile_operate.append(log_rootpath).append("/log_operate.txt");
 	string logFile_error;
-	logFile_error.append(log_rootpath).append("/log_error.txt");
+       // logFile_error.append(log_rootpath).append("/log_error.txt");
 	string logFile;
 	logFile.append(log_rootpath).append("./log.txt");
 	string loglogFile;
-	loglogFile.append(log_rootpath).append("./log_log.txt");
+        //loglogFile.append(log_rootpath).append("./log_log.txt");
 	string log1File;
-	log1File.append(log_rootpath).append("./log1.txt");
-// add by wangwd start 2015/05/20 
-	string hazardLog;
-	hazardLog.append(log_rootpath).append("./hazard_log.txt");
-// add by wangwd end 2015/05/20 
+        //log1File.append(log_rootpath).append("./log1.txt");
+
+        string hazardLog;
+        //hazardLog.append(log_rootpath).append("./hazard_log.txt");
+
 	string logFile_devFault;//yq
-	logFile_devFault.append(log_rootpath).append("./log_dev_fault.txt"); //yq
+        //logFile_devFault.append(log_rootpath).append("./log_dev_fault.txt"); //yq
 
 
 	string fileName;
@@ -542,16 +541,17 @@ int Log::openLogFile(int logtype) {
 
 	return fd;
 }
-#define LOG_FILE_PATH               "/home/yq/date_by_date/c++/log/"
+#define LOG_FILE_PATH               "./log/"
 int main()
 {	
 int i = 0;
 while (i < 100000000000)
 {
 Log::log.start(LOG_FILE_PATH);                                                                                                                                                                     
-ccprintf(DEBUG_LOG,"****************** start ******************");
-ccprintf(DEBUG_LOG,"hhhhhhhhhhhhhhqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-	sleep(2);
+CPRINT(DEBUG_LOG,"****************** start ******************");
+CPRINT(DEBUG_LOG,"oooooooooooooooooooooooooooooooooooooooooooooo");
+CPRINT(DEBUG_LOG,"i = %d",i);
+ sleep(0.2);
 i++;
 }
 }

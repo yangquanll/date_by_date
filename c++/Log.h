@@ -1,8 +1,8 @@
 /*
  * Log.h
  *
- *  Created on: Apr 23, 2009
- *      Author: root
+ *
+ *
  */
 
 #ifndef _LOG_H
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include<iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 using namespace std;
@@ -26,8 +26,8 @@ enum _logtype
 	DEBUG_LOG = 0,
 	OPERATE_LOG,
 	ERROR_LOG,
-	HAZARD_LOG,
-	DEV_FAULT_LOG, //yq
+        HAZARD_LOG,
+        DEV_FAULT_LOG, //yq
 	LOGTYPE_MAX,
 };
 
@@ -46,9 +46,8 @@ public:
     
 private:
 
-//------------------Li Shuai------------------
+
 	pthread_mutex_t log_lock;
-//------------------Li Shuai------------------
 	
 	Log()
 	{
@@ -72,12 +71,12 @@ private:
 	int mLogFile_operate;
 	int mLogFile_error;
     int mComPort;
-// add by wangwd start 2015/05/20
+
 	fstream *pFsHazard;
 	
 	int mLogFile_hazard;
 	int mLogFile_devFault; //yq
-// add by wangwd end 2015/05/20
+
 	//int fd;
  };
 #endif /* LOG_H_ */
