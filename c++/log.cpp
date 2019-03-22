@@ -5,6 +5,7 @@
 * 自定义 log文件的位置
 * 自定义定义log文件的大小 超过则删除
 *
+* ::close() 是 global 函数 在某个类里面invoke
 ***/
 
 #include <sys/types.h>
@@ -29,10 +30,25 @@
 
 #define TIMS_STAMP   1
 #define WRITE_FILES  1
-#define PATH_LOG  "./log"
+#define OPEN_FILES   1
+
+#define BASE_PATH_LOG  "./log"
 
 Log log;
+#if OPEN_FILES
 
+void Log:: open_files(int type)
+{
+        string  file_path;
+        string  file_name;
+        string  log_error;
+        log_error.append()
+        string  log_warn;
+        string  log_oper;
+        
+        
+}
+#endif
 #if WRITE_FILES
 void Log:: writer_files()
 {
@@ -65,12 +81,26 @@ void Log::gettime(char *buf)
 
 }
 #endif
+void Log::run(char *buf)
+{
+        log_base_path.clear();
+	log_base_path.append(log_path);
+
+	char cmdbuf[256];
+	sprintf(cmdbuf, "mkdir -p %s", log_path);
+	system(cmdbuf);
+
+	mLogFile = openLogFile(DEBUG_LOG);
+        log.open_files(int t);
+        
+}
 
 
 
 int main()
 {
 	
-        log.gettime();
+	log.gettime();
+        log.run(BASE_PATH_LOG);
 	return 0;		
 }
