@@ -90,11 +90,13 @@ void Log::displayHex() {
 
 void Log::print(const string& str)
 {
+	cout<< "print 1 \n"<<endl;
+	
 	string msg;
 
 	msg = getSysTime()+ str;
 
-	cout << msg << endl;
+	cout <<"print " << msg << endl;
 
 	msg.append("\n");
 	this->writeLogFile(DEBUG_LOG, msg.data(), msg.length());
@@ -125,10 +127,12 @@ void Log::print(int logtype, const char * format, ...)
 		memcpy(buf, timeStr, strlen(timeStr));
 	}
 	int len = strlen(buf);
+	cout<<"len befor = "<<len<<endl;
 	len +=vsprintf(buf+len, format, vl);
+	cout<<"len end = "<<len<<endl;
 	va_end(vl);
 
-	cout<<buf<<endl;
+	
 
 	//if(buf[len-1]== 0x0a)
 	//{
@@ -142,7 +146,8 @@ void Log::print(int logtype, const char * format, ...)
 		buf[len] = '\n';
 		len++;
 	}
-
+	//cout<<"buf = %s"<<buf<<endl;
+	cout<<"buf = "<<buf << "  len ="<< len <<endl;
 	Log::log.writeLogFile(logtype,buf, len);
 	if(logtype != DEBUG_LOG)
 		Log::log.writeLogFile(DEBUG_LOG, buf, len);
@@ -191,8 +196,7 @@ void Log::writeHazardLog(const char *data, int length)
 		hazardLog.append(log_rootpath).append("/hazard_log.txt");
 		//cout << "rootpath:" << hazardLog.data() <<endl;
 
-		pFsHazard->open(hazardLog.data(), ios_base::in | ios_base::out | ios_base::ate | ios_base::trunc);
-		
+		pFsHazard->open(hazardLog.data(), ios_base::in | ios_base::out | ios_base::ate | ios_base::trunc); 
 		pFsHazard->write(buf, strlen(buf));
 		vector<string>::const_iterator iter = vecContent.begin();
 		for (; vecContent.end() != iter; ++iter)
@@ -222,6 +226,7 @@ void Log::writeHazardLog(const char *data, int length)
 void Log::writeLogFile(int logtype, const char *data, int length)
 {
 	//if(mLogFile == -1) return;
+	//cout<<"buf =  %s "<<data<<endl;
 	int mLogFile_temp;
 	if(logtype == OPERATE_LOG)
 	{
@@ -545,12 +550,12 @@ int Log::openLogFile(int logtype) {
 int main()
 {	
 int i = 0;
-while (i < 100000000000)
+while (i < 10)
 {
 Log::log.start(LOG_FILE_PATH);                                                                                                                                                                     
-CPRINT(DEBUG_LOG,"****************** start ******************");
-CPRINT(DEBUG_LOG,"oooooooooooooooooooooooooooooooooooooooooooooo");
-CPRINT(DEBUG_LOG,"i = %d",i);
+CPRINT(DEBUG_LOG,"****************** start ****************** %d",i);
+//CPRINT(DEBUG_LOG,"oooooooooooooooooooooooooooooooooooooooooooooo");
+//CPRINT(DEBUG_LOG,"i = %d",i);
  sleep(0.2);
 i++;
 }
