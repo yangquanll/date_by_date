@@ -23,7 +23,7 @@ class Log
 		void write_files(int log_type, const char *ms,int len);
 		void run(char *buf);
 		void stop();
-
+		//pthread_mutex_t log_lock;
 		static void* tst_log2(void* arg);
 		static void* tst_log1(void* arg);
 		void excute();

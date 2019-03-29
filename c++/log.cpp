@@ -43,7 +43,8 @@
 Log log;
 #if OPEN_FILES
 ssize_t ts;
-
+string g_oper;
+int g_i;
 #define CPRINT(log_type, str, args...) do { string format; format.append("%s,%s,").append(str);   \
                switch(log_type)    \
                {   \
@@ -146,6 +147,10 @@ void Log::run(char *log_path)
 
 void Log:: Cout(int log_type, const char* fmt, ...)
 {
+    
+    int re = pthread_mutex_lock(&log_lock);
+    cout<<"Cout i ===  log_lock == "<<g_i++<<re<<endl;
+    pthread_mutex_unlock(&log_lock);
 	va_list ap;
 	va_start(ap, fmt);
     //cout<<"fmt = "<<fmt<<endl;
@@ -168,12 +173,11 @@ void Log:: Cout(int log_type, const char* fmt, ...)
 		buf[len] = '\n';
 		len++;
 	}
-//    pthread_mutex_lock(&log_lock); 
 	write_files(log_type,buf, len);
-   
+    pthread_mutex_unlock(&log_lock);
 	if(log_type != DEBUG_LOG)
 		 write_files(log_type, buf, len);
-//     pthread_mutex_unlock(&log_lock);
+    
 }
 
 struct thread_info {    /* Used as argument to thread_start() */
@@ -187,16 +191,19 @@ void * Log:: tst_log1(void* arg)
      int i;
      pthread_t threadID = pthread_self();
      cout<< "threadID1 = "<<threadID <<endl;
-        while(i < 10)
+        while(1)
         {
                 
                 i++;
-                cout<< i<<endl;
-                pthread_mutex_lock(&log_lock); 
-                CPRINT(DEBUG_LOG,"threadID1 =  %d , i = %d",threadID,i);
-                pthread_mutex_unlock(&log_lock);
+                //cout<< i<<endl;
+                //pthread_mutex_lock(&log_lock);
+                g_oper.append(" tst_log1");
+                cout<<"tst_log1 = %s " <<g_oper.data()<<endl;
+                CPRINT(DEBUG_LOG,"threadID1 =  %d , i = %d ,g_oper = %s ",threadID,i,g_oper.data());
+                //pthread_mutex_unlock(&log_lock);
                 //if(ts < 0)
                         //break;
+            usleep(2000 * 100);
         }    
      //CPRINT(DEBUG_LOG,"tst_log2ID =  %d",threadID);
 }
@@ -205,11 +212,16 @@ void * Log:: tst_log2(void* arg)
     int i;
      pthread_t threadID = pthread_self();
      cout<< "threadID2 = "<<threadID <<endl;
-    while(i < 10)
+    while(1)
         {
                i++;
-               cout<< i<<endl;
-               CPRINT(DEBUG_LOG,"threadID2 =  %d , i = %d",threadID,i);
+               //cout<< i<<endl;
+               //pthread_mutex_lock(&log_lock); 
+               g_oper = " tst_log2";
+               cout<<"tst_log2 = %s " <<g_oper.data()<<endl;
+               CPRINT(OPERATE_LOG,"threadID2 =  %d , i = %d ,g_oper = %s ",threadID,i,g_oper.data());
+               //pthread_mutex_unlock(&log_lock);
+               usleep(2000 * 100);
                //sleep(0.5);
                 //if(ts < 0)
                         //break;
@@ -223,8 +235,7 @@ void Log:: excute()
         int ret1,ret2;
         pthread_t thread_id1 ,thread_id2;
         pthread_create(&thread_id1,NULL,tst_log1,NULL);
-    
-    
+
         pthread_create(&thread_id2,NULL,tst_log2,NULL);
         pthread_join(thread_id1,&tret);
         pthread_join(thread_id2,&tret);
