@@ -45,6 +45,8 @@ Log log;
 ssize_t ts;
 string g_oper;
 int g_i;
+
+
 #define CPRINT(log_type, str, args...) do { string format; format.append("%s,%s,").append(str);   \
                switch(log_type)    \
                {   \
@@ -149,8 +151,8 @@ void Log:: Cout(int log_type, const char* fmt, ...)
 {
     
     int re = pthread_mutex_lock(&log_lock);
-    cout<<"Cout i ===  log_lock == "<<g_i++<<re<<endl;
-    pthread_mutex_unlock(&log_lock);
+    //cout<<"Cout i ===  log_lock == "<<g_i++<<re<<endl;
+   // pthread_mutex_unlock(&log_lock);
 	va_list ap;
 	va_start(ap, fmt);
     //cout<<"fmt = "<<fmt<<endl;
@@ -196,16 +198,21 @@ void * Log:: tst_log1(void* arg)
                 
                 i++;
                 //cout<< i<<endl;
-                //pthread_mutex_lock(&log_lock);
+                pthread_mutex_lock(&log_lock);
+                while(g_i > 10)
+                {
+                  printf("tst_log1 %d等待。。\n", g_i);
+                  pthread_cond_wait(&cond, &log_lock);
+                  printf("tst_log1 %d产品到了！！\n", g_i);
+                 }
                 g_oper.append(" tst_log1");
                 cout<<"tst_log1 = %s " <<g_oper.data()<<endl;
-                CPRINT(DEBUG_LOG,"threadID1 =  %d , i = %d ,g_oper = %s ",threadID,i,g_oper.data());
-                //pthread_mutex_unlock(&log_lock);
+                CPRINT(DEBUG_LOG,"threadID1 =  %d , i-->1 = %d ,g_oper = %s ",threadID,i,g_oper.data());
+                pthread_mutex_unlock(&log_lock);
                 //if(ts < 0)
                         //break;
-            usleep(2000 * 100);
+            //usleep(2000 * 100);
         }    
-     //CPRINT(DEBUG_LOG,"tst_log2ID =  %d",threadID);
 }
 void * Log:: tst_log2(void* arg)
 {
@@ -216,17 +223,23 @@ void * Log:: tst_log2(void* arg)
         {
                i++;
                //cout<< i<<endl;
-               //pthread_mutex_lock(&log_lock); 
+               pthread_mutex_lock(&log_lock); 
+                while(g_i > 10)
+                {
+                  printf("tst_log2 %d等待。。\n", g_i);
+                  pthread_cond_wait(&cond, &log_lock);
+                  printf("tst_log2 %d产品到了！！\n", g_i);
+                 }
+               g_i++;
                g_oper = " tst_log2";
                cout<<"tst_log2 = %s " <<g_oper.data()<<endl;
-               CPRINT(OPERATE_LOG,"threadID2 =  %d , i = %d ,g_oper = %s ",threadID,i,g_oper.data());
-               //pthread_mutex_unlock(&log_lock);
+               CPRINT(OPERATE_LOG,"threadID2 =  %d , i-->2 = %d ,g_oper = %s ",threadID,i,g_oper.data());
+               pthread_mutex_unlock(&log_lock);
                usleep(2000 * 100);
                //sleep(0.5);
                 //if(ts < 0)
                         //break;
         }
-     //CPRINT(DEBUG_LOG,"tst_log2ID =  %d",threadID);
 }
 void Log:: excute()
 {
@@ -247,18 +260,5 @@ int main()
         int i = 0;
         log.run(BASE_PATH_LOG);
         log.excute();
-        
-/*    
-        while(i < 10)
-        {
-                
-                //CPRINT(DEBUG_LOG,"wwwwwwwwwwwwwwwwwwwwwwwwwwwww %d",i);
-                i++;
-                cout<< i<<endl;
-               
-                //if(ts < 0)
-                        //break;
-        }
-*/
-	return 0;		
+	    return 0;		
 }

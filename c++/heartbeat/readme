@@ -1,0 +1,4 @@
+g++ Log.cpp commonfun.cpp heartbeat.cpp udpnet.cpp  -fPIC -shared -o liblog.so
+sudo cp liblog.so /usr/lib
+g++ heartbeatMonitor.cpp -L. -llog  -pthread -o test
+657a773d5cad6b66ec1faf60c5812552f96ac272

@@ -7,13 +7,18 @@
 #include <fstream>
 #include <string>
 using namespace std;
+
 static pthread_mutex_t log_lock;
+pthread_cond_t cond;
+pthread_cond_t n_empty;
+
 enum _logtype
 {
 	DEBUG_LOG = 0,
 	OPERATE_LOG,
 	ERROR_LOG,
 };
+
 class Log
 {
 	public:
@@ -31,10 +36,15 @@ class Log
 		Log()
 		{
 			pthread_mutex_init(&log_lock,NULL);
+			pthread_cond_init(&cond,NULL);
+			pthread_cond_init(&n_empty,NULL);
+			
 		};
 		~Log()
 		{
 			pthread_mutex_destroy(&log_lock);
+			pthread_cond_destroy(&cond);
+			pthread_cond_destroy(&n_empty);
 		};
 	private:
 		string log_base_path;
