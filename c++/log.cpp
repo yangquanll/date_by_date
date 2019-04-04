@@ -247,7 +247,7 @@ void Log:: excute()
         void *tret;
         int ret1,ret2;
         pthread_t thread_id1 ,thread_id2;
-        pthread_create(&thread_id1,NULL,tst_log1,NULL);
+        pthread_create(&thread_id1,NULL,tst_log1,&ret1);
 
         pthread_create(&thread_id2,NULL,tst_log2,NULL);
         pthread_join(thread_id1,&tret);
