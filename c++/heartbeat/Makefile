@@ -1,21 +1,10 @@
-#objects =  heartbeatMonitor_send.o udpnet.o Log.o commonfun.o
-#revobj = heartbeatMonitor.o Log.o commonfun.o udpnet.o
-#recv : $(revobj)
-#	g++ -W -Wall -pthread -o re$(revobj)
-#send : $(objects) 
-#	g++ -W -Wall -pthread -o send$(objects)
-#$(objects) : .h # 都依赖print.h
-#	mian.o : mian.c  #干掉了gcc -c main.c 让Gun make自动推导了。
-#	print.o : print.c 　　　　
-#clean :　　　　　　　　　　
-#	rm send $(objects) recv $(revobj)
 
 #define compiler var.
 GCC = gcc -pthread
 GXX = g++ -pthread
 
 #define compiler switch.
-CFLAG = -Wall -c 
+CFLAG = -Wall -c # -Wall显示所有警告，-g 可调试，-c编译 
 
 #define header of files dir.
 INCLUDE = ./include
@@ -25,7 +14,7 @@ SRC_DIR = ./src
 SRC_SD = ./src/send
 SRC_RE = ./src/recv
 
-SRC = $(wildcard $(SRC_DIR)/*.cpp)
+SRC = $(wildcard $(SRC_DIR)/*.cpp) # wildcard 获取目录下文件
 SRC_RECV = $(wildcard $(SRC_RE)/*.cpp)
 SRC_SEND = $(wildcard $(SRC_SD)/*.cpp)
 #define output dir for object files.
@@ -34,15 +23,17 @@ OBJOUTPUT = ./obj/
 #define output dir for bin
 BINOUTPUT = ./bin/
 
-OBJS_SEND = $(patsubst %.cpp,%.o,$(SRC) $(SRC_SEND))
+OBJS_SEND = $(patsubst %.cpp,%.o,$(SRC) $(SRC_SEND)) #patsubt cpp 直接转化成 .o
 OBJS_RECV = $(patsubst %.cpp,%.o,$(SRC) $(SRC_RECV))
 
-OBJS_DIR_SEND = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_SEND)))
-OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV)))
+OBJS_DIR_SEND = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_SEND))) #notdir 除 路径信息 直接转化成 .O
+OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV))) #addprefix  组合字符 添加前缀
 
 %.o:%.cpp
-	$(GXX) $(CFLAG) $< -I$(INCLUDE) -o $@
-	mv $@ $(OBJOUTPUT)
+	$(GXX) $(CFLAG) $< -I$(INCLUDE) -o $@ 
+	mv $@ $(OBJOUTPUT) 
+
+# $@ = %.o (*.o)
 
 send:$(OBJS_SEND)$
 	$(GXX) $(OBJS_DIR_SEND) -o $(BINOUTPUT)$@
@@ -51,7 +42,7 @@ receive:$(OBJS_RECV)$
 	$(GXX) $(OBJS_DIR_RECV) -o $(BINOUTPUT)$@
 
 clean:
-	rm -f $(OBJOUTPUT)*.o
+	rm -rf $(OBJOUTPUT)*.o $(BINOUTPUT)*
 
 ECHO:
 	@echo $(OBJS_SEND) 
@@ -63,4 +54,7 @@ ECHO:
 	@echo $(OBJS_DIR_RECV)
 	@echo "=========="	
 	@echo $@
+
+all: send receive ECHO
+.PHONY : all
 
