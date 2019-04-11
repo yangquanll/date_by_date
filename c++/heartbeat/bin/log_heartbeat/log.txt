@@ -1,0 +1,5 @@
+04-11 18:52:39 728 - ===========start heartbeatMonitor===============
+04-11 18:52:39 728 - [DBG],[heartbeat],[HeartbeatMonitor] pthread_create recvThread ok.
+04-11 18:52:39 728 - [DBG],[heartbeat],[HeartbeatMonitor] pthread_create checkThread ok.
+04-11 18:52:50 351 - ===========start heartbeat Send thread ===============
+04-11 18:52:50 352 - [DBG],[heartbeat],[HeartbeatSender] pthread_create sendThread ok.
