@@ -56,7 +56,7 @@ bool HBUdpNetADP::NetSend(const UINT32 dest_ip, const int dest_port, char* send_
     }
     
 	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_addr.s_addr = dest_ip;
+	sockAddr.sin_addr.s_addr = dest_ip; // 127.0.0.1  int  16777343
 	sockAddr.sin_port = htons(dest_port);
 
 	iResult = UDPNet.NetSend(UDPSocket, sockAddr, send_buff, send_size);
@@ -173,7 +173,7 @@ void Heartbeat::showContent(const char *dbg_head /*= ""*/)
 
 	dbg_idx += sprintf(dbg_buff + dbg_idx, "}");
 
-	hbprintf(DEBUG_LOG, "%s", dbg_buff);
+	hbprintf(DEBUG_LOG, "YL -- showContent  = %s", dbg_buff);
 }
 
 void updateMainWinHeartBeat()
@@ -245,11 +245,11 @@ HeartbeatSender::~HeartbeatSender()
 
 bool HeartbeatSender::generateHeartbeatPkg()
 {
-	heartbeat = Heartbeat::heartbeat;
+	heartbeat = Heartbeat::heartbeat; // class  heartbeat = heartbeat 
 
 	if (HeartbeatDbg_ON()) heartbeat.showContent("[Send]");
 
-	memcpy(send_buff, &heartbeat, sizeof(Heartbeat));
+	memcpy(send_buff, &heartbeat, sizeof(Heartbeat)); // send_buff =  class Heartbeat
 	send_size = sizeof(Heartbeat);
 
 	return true;
@@ -263,12 +263,13 @@ Heartbeat HeartbeatSender::getHeartbeat()
 bool HeartbeatSender::start(	UINT32 _dest_ip /*= DFT_HEARTBEAT_DST_IP*/, 
 								int _dest_port /*= DFT_HEARTBEAT_DST_PORT*/ )
 {	
-#define DBG_HEAD "[HeartbeatSender] "
+#define DBG_HEAD "[ YL -HSender] "
 
 	dest_ip = _dest_ip;
 	dest_port = _dest_port;
 
-	if (pthread_create(&sendThreadId, NULL, sendThread, (void*)this) != 0)
+	hbprintf(DEBUG_LOG, DBG_HEAD "_dest_ip =  %d,  _dest_port  = %d", _dest_ip,_dest_port);
+	if (pthread_create(&sendThreadId, NULL, sendThread, (void *)this) != 0)  // (void*)this 
 	{
 		hbprintf(DEBUG_LOG, DBG_HEAD "pthread_create sendThread failed.");
 		return false;
@@ -287,12 +288,12 @@ void HeartbeatSender::stop()
 
 /* static */ void* HeartbeatSender::sendThread( void* param )
 {
-#define DBG_HEAD "[Send] "
+#define DBG_HEAD "[ YL -- Send] "
 
 	static int call_cnt = 0;
 
 	int iRet = true;
-    bool ret = true;
+         bool ret = true;
 
 	HeartbeatSender* sender = (HeartbeatSender*)param;
 	HeartbeartStatistic	&statistic = sender->statistic;
@@ -305,8 +306,12 @@ void HeartbeatSender::stop()
 		}
 		
 		sender->generateHeartbeatPkg();
-	
-	    ret = sender->netAdp.NetSend(sender->dest_ip, 
+		//string buff = "YQ_SEND_BUFF";
+		//strcpy(sender->send_buff ,buff.data());
+		//char *buff;// = "YQ_SEND_BUFF";
+		//memcpy(sender->send_buff,buff,sizeof(sender->send_buff));
+		hbprintf(DEBUG_LOG," YL  -- dest_ip = %d ,dest_port = %d,sender->send_size =%d , sender->send_buff =%s",sender->dest_ip,sender->dest_port,sender->send_size,sender->send_buff);
+	    	ret = sender->netAdp.NetSend(sender->dest_ip, 
 									sender->dest_port, 
 									sender->send_buff, 
 									sender->send_size, 
@@ -315,12 +320,12 @@ void HeartbeatSender::stop()
 	    {
 	        if (iRet == 0)
 	        {
-	            //hbprintf(DEBUG_LOG, DBG_HEAD "Time out at NetSend.");  
+	            hbprintf(DEBUG_LOG, DBG_HEAD "Time out at NetSend.");  
 				statistic.timeout_cnt++;
 	        }
 	        else
 	        {
-	            //hbprintf(DEBUG_LOG, DBG_HEAD "ERROR at NetSend.");
+	            hbprintf(DEBUG_LOG, DBG_HEAD "ERROR at NetSend.");
 				statistic.err_cnt++;
 	        }
 
@@ -366,8 +371,8 @@ void HeartbeatChecker::recover()
 
 	//hbprintf(DEBUG_LOG, DBG_HEAD "pgrep ssa_tlcd | xargs kill -9");
 	//system("pgrep ssa_tlcd | xargs kill");
-	hbprintf(DEBUG_LOG, DBG_HEAD "ps -ef ");
-	system("ps -ef|grep test");
+	hbprintf(DEBUG_LOG, DBG_HEAD " YL --- PING  ping 127.0.0.1 ");
+	system(" ping 127.0.0.1");
 
 	hbprintf(DEBUG_LOG, DBG_HEAD "Clear heartbeat and lost counter.");
 	clear();
@@ -394,7 +399,7 @@ bool HeartbeatMonitor::parseHeartbeatPkg()
 {
 	memcpy(&heartbeat, recv_buff, sizeof(Heartbeat));
 
-	if (HeartbeatDbg_ON()) heartbeat.showContent("[Recv]");
+	if (HeartbeatDbg_ON()) heartbeat.showContent("[YL --Recv]");
 
 	return true;
 }
@@ -451,12 +456,12 @@ bool HeartbeatMonitor::start()
         {
             if (monitor->recv_size == 0)
             {
-            	//hbprintf(DEBUG_LOG, DBG_HEAD "Time out at NetRecv.");
+            	hbprintf(DEBUG_LOG, DBG_HEAD "Time out at NetRecv.");
 				statistic.timeout_cnt++;
 			}
             else
             {
-            	//hbprintf(DEBUG_LOG, DBG_HEAD "ERROR at NetRecv.");
+            	hbprintf(DEBUG_LOG, DBG_HEAD "ERROR at NetRecv.");
 				statistic.err_cnt++;
             }
 
@@ -496,12 +501,13 @@ bool HeartbeatMonitor::start()
 	while(1)
 	{ 
 		int &pkg_lost_cnt = checker.pkg_lost_cnt;
-		
+
+		cout <<"YL -- monitor->pkg_cnt =  "<<monitor->pkg_cnt<<"  pkg_cnt = "<< pkg_cnt<<endl;
 		if (monitor->pkg_cnt == pkg_cnt)
 		{
 			pkg_lost_cnt++;
 			statistic.pkg_lost_cnt++;
-			hbprintf(DEBUG_LOG, DBG_HEAD "Pkg lost for %d times.", pkg_lost_cnt); 
+			hbprintf(DEBUG_LOG, DBG_HEAD " YQ Pkg lost for %d times.", pkg_lost_cnt); 
 
 			if (LOST_LIMIT < pkg_lost_cnt)
 			{	
@@ -523,6 +529,9 @@ bool HeartbeatMonitor::start()
 		err_found = false;
 		for (int i = 0; i < HEARTBEAT_COUNTER_NUM; ++i)
 		{
+			
+			hbprintf(DEBUG_LOG, DBG_HEAD " YQbefor  new _counter =    %d  ,old_ counter =    %d .",new_heartbeat.counter[i],checker.heartbeat.counter[i]); 
+			
 			if (new_heartbeat.counter[i] == checker.heartbeat.counter[i])
 			{
 				err_found = true;
@@ -538,8 +547,8 @@ bool HeartbeatMonitor::start()
 		for (int i = 0; i < HEARTBEAT_COUNTER_NUM; ++i)
 		{
 			int &lost_cnt = checker.lost_cnt[i];
-			
-			if (new_heartbeat.counter[i] == checker.heartbeat.counter[i])
+			hbprintf(DEBUG_LOG, DBG_HEAD " YQ  new _counter =    %d  ,old_ counter =    %d .",new_heartbeat.counter[i],checker.heartbeat.counter[i]); 
+			if (new_heartbeat.counter[i] != checker.heartbeat.counter[i])
 			{
 				lost_cnt++;
 				statistic.lost_cnt.counter[i]++;

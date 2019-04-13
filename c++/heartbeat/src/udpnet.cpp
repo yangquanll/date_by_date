@@ -75,13 +75,11 @@ int CUdpNet::NetRcv(int udpsocket, sockaddr_in &remote, char *rcvbuf, int buflen
 	socklen_t		remoteLen = sizeof(remote);
 	struct timeval	tWait;
 
-	/* by lq 2016-09-26 BEGIN */
-    int sec = timeout;
-    int usec = (int)(timeout * 1000 * 1000) % (1000 * 1000);
+   	 int sec = timeout;
+    	int usec = (int)(timeout * 1000 * 1000) % (1000 * 1000);
     
 	tWait.tv_sec = sec;
 	tWait.tv_usec = usec;
-	/* by lq 2016-09-26 END */
 
 	if (rcvbuf == NULL)
 	{
@@ -99,7 +97,7 @@ int CUdpNet::NetRcv(int udpsocket, sockaddr_in &remote, char *rcvbuf, int buflen
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(udpsocket, &fd);
-	iResult = select( udpsocket + 1, &fd, NULL, NULL, &tWait);
+	iResult = select( udpsocket + 1, &fd, NULL, NULL, NULL); //&tWait  Blocking process unlock NULL 
 	if (iResult == -1)
 	{
 		unprintf(ERROR_LOG, "<NetRcv> -- Error at select()");
@@ -122,6 +120,8 @@ int CUdpNet::NetRcv(int udpsocket, sockaddr_in &remote, char *rcvbuf, int buflen
 	memset(rcvbuf, 0, buflen);
 
 	iResult = recvfrom( udpsocket, rcvbuf, buflen, 0, (sockaddr *)(&remote), &remoteLen);
+	unprintf(DEBUG_LOG, "<YL NetRCV > -- rcvbuf buffer  %s ",rcvbuf);
+	
 	if ( iResult == 0 )
 	{
 		unprintf(ERROR_LOG, "<NetRcv> -- Receive connection closed.");
@@ -142,7 +142,8 @@ int CUdpNet::NetSend(int udpsocket, sockaddr_in remote, char *sendbuf, int bufle
 	int sendlen = 0;
 
 	socklen_t	remoteLen = sizeof(remote);
-
+	//sendbuf = "YQ_SEND";
+	//unprintf(DEBUG_LOG, "<YL NetSend> -- send buffer  %s ",sendbuf);
 	if (sendbuf == NULL)
 	{
 		unprintf(ERROR_LOG, "<NetSend> -- send buffer is null ");

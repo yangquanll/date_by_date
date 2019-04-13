@@ -9,7 +9,7 @@
 extern void hb_usleep(int usecs);
 
 bool HeartbeatPkgUT_ON() { return false; }
-bool HeartbeatDbg_ON() { return false; }
+bool HeartbeatDbg_ON() { return true; }
 
 HeartbeatMonitor heartbeatMonitor;
 
@@ -17,7 +17,7 @@ int main(int /*argc*/, char * /*argv*/[])
 {
 	Log::log.start((char*)LOG_HEARTBEAT_FILE_PATH);
 	
-	Log::log.print("===========start heartbeatMonitor===============");
+	Log::log.print("===========start RECV heartbeatMonitor===============");
 
 	heartbeatMonitor.start();	
 	

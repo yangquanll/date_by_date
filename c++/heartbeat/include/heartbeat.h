@@ -92,7 +92,7 @@ public:
 	/* For sender and monitor */
 	int 		cycle_ms;
 	int 		print_cycle;
-	int			ok_cnt;
+	int		ok_cnt;
 	int 		timeout_cnt;
 	int 		err_cnt;
 
@@ -118,7 +118,7 @@ private:
 	UINT32		dest_ip;
 	int			dest_port;
 	
-	char		send_buff[MAX_MSG_LEN];
+	char			send_buff[MAX_MSG_LEN];
 	UINT32		send_size;
 
 	Heartbeat 	heartbeat;
