@@ -17,6 +17,7 @@ SRC_RE = ./src/recv
 SRC = $(wildcard $(SRC_DIR)/*.cpp) # wildcard 获取目录下文件
 SRC_RECV = $(wildcard $(SRC_RE)/*.cpp)
 SRC_SEND = $(wildcard $(SRC_SD)/*.cpp)
+
 #define output dir for object files.
 OBJOUTPUT = ./obj/
 
@@ -26,14 +27,14 @@ BINOUTPUT = ./bin/
 OBJS_SEND = $(patsubst %.cpp,%.o,$(SRC) $(SRC_SEND)) #patsubt cpp 直接转化成 .o
 OBJS_RECV = $(patsubst %.cpp,%.o,$(SRC) $(SRC_RECV))
 
-OBJS_DIR_SEND = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_SEND))) #notdir 除 路径信息 直接转化成 .O
-OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV))) #addprefix  组合字符 添加前缀
+OBJS_DIR_SEND = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_SEND))) #notdir 去除路径信息 直接转化成 .O
+OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV))) #addprefix  组合字符即添加前缀
 
 %.o:%.cpp
 	$(GXX) $(CFLAG) $< -I$(INCLUDE) -o $@ 
 	mv $@ $(OBJOUTPUT) 
 
-# $@ = %.o (*.o)
+# $@ = %.o (*.o) 命令行中$@代表的是目标文件也就是%.o,$<指的是生成目标文件的依赖文件也就是%.c
 
 send:$(OBJS_SEND)$
 	$(GXX) $(OBJS_DIR_SEND) -o $(BINOUTPUT)$@
