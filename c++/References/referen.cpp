@@ -42,8 +42,9 @@
 #include <string.h>
 using namespace std;
 #define SAFE_DETETE(p)	if(p) { delete(p); p = NULL; }
+
 #define TEST_ST_NEW 0
-#define TEST_ST_RE 1
+#define TEST_ST_RE 0
 #define TEST_ST_VIRTL 1
 
 typedef struct car
@@ -79,13 +80,24 @@ class B // HM
 	
 };
 
-int A::s_cs = 3; // 类外定义 public
+int A::s_cs = 3; // 类外定义成员 默认是 public
 
+#if TEST_ST_VIRTL
 class VA
 {
 	public:
-		virtual fuc(){cout<<"virtual VA "<<endl;};
-		virtual ~VA(); // 基类的析构函数 声明为 虚函数 防止 内存泄露
+		virtual void fuc(){cout<<"virtual fuc "<<endl;};
+		
+		VA(){ };
+		virtual ~VA(){ cout << " ~VA() call "<< endl;};
+	
+	protected:
+		int prot;
+	
+	private:
+		int prv;
+	
+	//基类的析构函数 声明为 虚函数 防止 内存泄露
 	/* 原因： 原因是基类指针指向了派生类对象，而基类中的析构函数却是非virtual的，之前讲过，
 	 * 虚函数是动态绑定的基础。现在析构函数不是virtual的，因此不会发生动态绑定，而是静态绑定，指针的静态类型为基类指针，
 	 * 因此在delete时候只会调用基类的析构函数，而不会调用派生类的析构函数
@@ -95,11 +107,44 @@ class VA
 
 class VB
 {
-	virtual ~VB();
+	public:
+	
+		VB(){ };
+		void VB_fun(){cout << " VB_fun() call "<< endl; };
+		void fuc(){cout<<"VB fuc "<<endl;};
+	
+		virtual ~VB(){ cout << " ~VB() call "<< endl;};
+	
+		private:
+		protected:
+	
 };
 
 class VC :public virtual VA
 {
+	public:
+		VC(){ };
+		
+		virtual ~VC(){ cout << " ~VC() call "<< endl;};
+		
+	private:
+	protected:
+	
+
+};
+
+class VD :public VA
+{
+	public:
+		VD(){ };
+		void fuc(){cout<<" VD fuc "<<endl;};
+		
+		virtual ~VD(){ cout << " ~VD() call "<< endl;};
+		
+		
+	private:
+	protected:
+	
 
 };
 /*
@@ -108,12 +153,12 @@ class VC :public virtual VA
  *而不是 普通继承的 对于A引用了两次
  */
 
-class VD :public  VA
+class VE :public  VA
 {
 	public:
-		fuc(){cout<<"virtual VA "<<endl;};
+		void fuc(){cout<<"virtual VA "<<endl;};
 };
-
+#endif
 
 
 int main(int argc,char *argv[])
@@ -147,15 +192,26 @@ int main(int argc,char *argv[])
 	A &abb = bb->abb; // 用引用的方法 来调用 A 的 g_a_count
 	abb.g_a_count =1999;
 	cout << "abb.g_a_count = "<<abb.g_a_count<<endl;
+	A  aaa;
+	cout<<"aaa.g_a_count"<<aaa.g_a_count<< " A::s_cs = "<<aaa.s_cs<<endl;
+	
+	
 #endif
 
 #if TEST_ST_VIRTL
-	
+/***** 一个经典的例子 *****/
+	VA *va = new VD(); // 只要调用就可以 同时 析构基类和派生类的
+	VD *vd = new VD();
+
+	SAFE_DETETE(va);
+	SAFE_DETETE(vd);
+/***** virtual 多态用法 *****/
+	VA *vdd = new VA();
+	vdd->fuc();
+
 	
 #endif
 
-	A  aaa;
-	cout<<"aaa.g_a_count"<<aaa.g_a_count<< " A::s_cs = "<<aaa.s_cs<<endl;
 
 	return 0;
 
