@@ -32,7 +32,20 @@
 ***********************************
 * & :: 使用方法
 * 一个类调用 两一个类的方法 可以用引用的方式
-* 事先再 要调用的类(B)里面实例化要被调用的类（A）
+* 事先再 要调用的类(B)里面实例 要被调用的类（A）
+***********************************
+* virtual 函数用法注意
+* 编译器在编译的时候，发现基类中有虚函数，此时编译器会为每个包含虚函数的类创建一个虚表（即vtable），
+* 该表是一个一维数组，在这个数组中存放每个虚函数的地址。
+* c++ 多态性 包括两点 一个是 类的多态 和函数的多态 类的多态可以通过 虚函数 来实现 ，函数的多态可以 用重载
+* C++的多态性用一句话概括就是：在基类的函数前加上virtual关键字，在派生类中重写该函数，运行时将会根据对象的实际类型来调用相应的函数。
+* 如果对象类型是派生类，就调用派生类的函数；如果对象类型是基类，就调用基类的函数。
+***********************************
+* virtual 应用 场景**
+* 当我们一个指针指向了子类，或者引用子类那么我们希望调用函数的时候是调用子类的函数，
+* 但是实际情况却不是这样。这时候就需要virtual关键字了
+* 纯虚函数： 含有 它的类叫抽象类 ，不能被实例化 即new()
+* 
 */
 #include <iostream>
 #include <vector>
@@ -45,7 +58,8 @@ using namespace std;
 
 #define TEST_ST_NEW 0
 #define TEST_ST_RE 0
-#define TEST_ST_VIRTL 1
+#define TEST_ST_VIRTL 0
+#define TEST_ST_VIRTL_INHER 1
 
 typedef struct car
 {
@@ -82,17 +96,18 @@ class B // HM
 
 int A::s_cs = 3; // 类外定义成员 默认是 public
 
-#if TEST_ST_VIRTL
+#if TEST_ST_VIRTL || TEST_ST_VIRTL_INHER 
 class VA
 {
 	public:
-		virtual void fuc(){cout<<"virtual fuc "<<endl;};
-		
-		VA(){ };
-		virtual ~VA(){ cout << " ~VA() call "<< endl;};
+		virtual void fuc(){cout<<" VA virtual fuc "<<endl;}
+		int m_vacount;
+		VA(){cout<<" VA() "<<endl;}
+		virtual ~VA(){ cout << " ~VA() call "<< endl;}
+		virtual void pure_v() = 0; // 子类必须实现 它
 	
 	protected:
-		int prot;
+		int m_prot;
 	
 	private:
 		int prv;
@@ -110,10 +125,10 @@ class VB
 	public:
 	
 		VB(){ };
-		void VB_fun(){cout << " VB_fun() call "<< endl; };
-		void fuc(){cout<<"VB fuc "<<endl;};
+		void VB_fun(){cout << " VB_fun() call "<< endl; }
+		virtual void fuc(){cout<<"VB fuc "<<endl;}
 	
-		virtual ~VB(){ cout << " ~VB() call "<< endl;};
+		virtual ~VB(){ cout << " ~VB() call "<< endl;}
 	
 		private:
 		protected:
@@ -125,7 +140,7 @@ class VC :public virtual VA
 	public:
 		VC(){ };
 		
-		virtual ~VC(){ cout << " ~VC() call "<< endl;};
+		virtual ~VC(){ cout << " ~VC() call "<< endl;}
 		
 	private:
 	protected:
@@ -133,33 +148,43 @@ class VC :public virtual VA
 
 };
 
+class VE :public virtual VA
+{
+	public:
+		void fuc(){cout<<" VE fuc  "<<endl;}
+};
+
+class VF :public VE,public VC
+{
+	public:
+		VF(){}
+		~VF(){}
+		void fuc(int c){cout<<" VF c = "<<c<<endl;}
+		void pure_v(){cout<<" VF prue virtual fuc pure_v  "<<endl;}
+};
+
+#if TEST_ST_VIRTL
 class VD :public VA
 {
 	public:
-		VD(){ };
-		void fuc(){cout<<" VD fuc "<<endl;};
-		
-		virtual ~VD(){ cout << " ~VD() call "<< endl;};
+		VD(){cout << " VD()  "<< endl; };
+		void fuc(){cout<<" VD fuc "<<endl;}	
+		~VD(){ cout << " ~VD() call "<< endl;}
+		void pure_v(){ cout<< " VD pure_v()" <<endl;}
 		
 		
 	private:
 	protected:
 	
 
-};
+}vd_t;
+#endif
 /*
  *在多继承下，虚继承就是为了解决菱形继承中，
  *B,C都继承了A，D继承了B,C，那么D关于 A的引用只有一次，
  *而不是 普通继承的 对于A引用了两次
  */
-
-class VE :public  VA
-{
-	public:
-		void fuc(){cout<<"virtual VA "<<endl;};
-};
 #endif
-
 
 int main(int argc,char *argv[])
 {
@@ -200,19 +225,31 @@ int main(int argc,char *argv[])
 
 #if TEST_ST_VIRTL
 /***** 一个经典的例子 *****/
-	VA *va = new VD(); // 只要调用就可以 同时 析构基类和派生类的
-	VD *vd = new VD();
+	VA *va = new VD(); // 基类 析构函数 定义成 virtual 可以 同时 析构基类和派生类的
+	VD *vd = new VD(); // 可以同时 析构基类和派生类
 
-	SAFE_DETETE(va);
+	SAFE_DETETE(va); //同时  析构基类和派生类的
 	SAFE_DETETE(vd);
+cout<< "<<<<<< base class virtual delete >>>>>>" <<endl;
 /***** virtual 多态用法 *****/
-	VA *vdd = new VA();
-	vdd->fuc();
+	VA *vaa = new VD(); // 不加 virtual invoke VA fuc, 加上 invoke VD fuc 
+	VA *vdd; //VA *vdd = new VA() error: 定义了纯虚函数 那么 不能被实例化 !!!
+	vdd= &vd_t;
+/* [VD *vdd = new VD()] 和 [VA *vdd = new VD()]  同时 invoke  VA()+VD() */
 
-	
+	vdd -> fuc();// VD fuc 子类的 函数
+	vdd -> pure_v(); // 次处注意 如果类中定义了纯虚函数 那么 不能被实例化 
+	SAFE_DETETE(vaa);
+cout<< "<<<<<< virtual base  for Derived fuc use >>>>>>" <<endl;	
+#endif
+/***** virtual inheritance  *****/
+#if TEST_ST_VIRTL_INHER
+
+cout<< "<<<<<< virtual inheritance >>>>>>" <<endl;
 #endif
 
-
+	VA *vf = new VF(); //如果 用 虚继承 只产生 一个 VA，如果 VC VE 不用 虚继承则 会产生两个 VA 的副本
+	vf ->fuc(); 
 	return 0;
 
 }
