@@ -102,9 +102,10 @@ class VA
 	public:
 		virtual void fuc(){cout<<" VA virtual fuc "<<endl;}
 		int m_vacount;
+		static VA vab;
 		VA(){cout<<" VA() "<<endl;}
 		virtual ~VA(){ cout << " ~VA() call "<< endl;}
-		virtual void pure_v() = 0; // 子类必须实现 它
+		//rtual void pure_v() = 0; // 子类必须实现 它
 	
 	protected:
 		int m_prot;
@@ -120,6 +121,8 @@ class VA
 	
 };
 
+VA VA::vab;
+
 class VB
 {
 	public:
@@ -127,8 +130,12 @@ class VB
 		VB(){ };
 		void VB_fun(){cout << " VB_fun() call "<< endl; }
 		virtual void fuc(){cout<<"VB fuc "<<endl;}
+		bool test();
+		VA vab;
+		char sock_buff[4400];
 	
 		virtual ~VB(){ cout << " ~VB() call "<< endl;}
+		
 	
 		private:
 		protected:
@@ -185,6 +192,17 @@ class VD :public VA
  *而不是 普通继承的 对于A引用了两次
  */
 #endif
+bool VB :: test()
+{
+	vab = VA :: vab;
+	memset(sock_buff,0,sizeof(sock_buff));
+	memcpy(sock_buff,&vab,sizeof(vab));
+	cout << "sock_buff size = "<< sizeof(sock_buff)<<endl;
+	if(sock_buff == NULL)
+		   return false;
+
+	return true;
+}
 
 int main(int argc,char *argv[])
 {
@@ -244,12 +262,15 @@ cout<< "<<<<<< virtual base  for Derived fuc use >>>>>>" <<endl;
 #endif
 /***** virtual inheritance  *****/
 #if TEST_ST_VIRTL_INHER
-
+	VA *vf = new VF(); //如果 用 虚继承 只产生 一个 VA，如果 VC VE 不用 虚继承则 会产生两个 VA 的副本
+	vf ->fuc(); 
 cout<< "<<<<<< virtual inheritance >>>>>>" <<endl;
 #endif
 
-	VA *vf = new VF(); //如果 用 虚继承 只产生 一个 VA，如果 VC VE 不用 虚继承则 会产生两个 VA 的副本
-	vf ->fuc(); 
+	VB *vb;
+	vb->test();
+	//cout << "sock_buff size = "<< sizeof(vb->sock_buff)<<endl;
+
 	return 0;
 
 }

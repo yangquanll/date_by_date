@@ -139,7 +139,7 @@ extern bool HeartbeatDbg_ON();
 extern bool HeartbeatPkgUT_ON();
 
 /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_SRC_PORT 	= 5400;
-/* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_IP 	= inet_addr("127.0.0.1");	
+/* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_IP 	= inet_addr("192.168.20.166");	//127.0.0.1
 /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_PORT 	= 5500;
 
 /* static */ const char* Heartbeat::counter_name[HEARTBEAT_COUNTER_NUM] = {

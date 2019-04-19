@@ -100,7 +100,7 @@ int CUdpNet::NetRcv(int udpsocket, sockaddr_in &remote, char *rcvbuf, int buflen
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(udpsocket, &fd);
-	iResult = select( udpsocket + 1, &fd, NULL, NULL, NULL); //&tWait  Blocking process unlock NULL 
+	iResult = select( udpsocket + 1, &fd, NULL, NULL, &tWait); //&tWait  Blocking process unlock NULL 
 	if (iResult == -1)
 	{
 		unprintf(ERROR_LOG, "<NetRcv> -- Error at select()");
