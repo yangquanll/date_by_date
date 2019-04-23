@@ -132,7 +132,7 @@ int main(int argc, char *argv[]){
 	/* Set the source to play */
     g_object_set (G_OBJECT (data.source), "location", "./yq.webm", NULL);
 
-printf(" yq	 --> set path \n");
+    printf(" yq	 --> set path \n");
     /* Start playing */
     ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) 

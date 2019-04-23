@@ -64,7 +64,7 @@ void MainWindow::on_timeSlider_rangeChanged(int min, int max)
 
 void MainWindow::on_timeSlider_sliderMoved(int position)
 {
-    //g_print("[on_timeSlider_sliderMoved] to %d", position);
+    g_print("[on_timeSlider_sliderMoved] to %d", position);
     gst_element_seek_simple (pipeline, GST_FORMAT_TIME, GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT), (gint64)(position * GST_SECOND));
     ui->curTimelabel->setText(get_time_string(position));
 }
