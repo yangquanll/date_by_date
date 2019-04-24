@@ -1,15 +1,25 @@
 /*
-* 内存分配方式3种
+* @内存分配方式3种
 * 1) 静态区创建 如全局变量 静态变量
 * 2) 栈上创建 函数内局部变量的存储单元都可以在栈上创建,函数执行结束时这些存储单元自动被释放
 * 3）堆上分配 由程序员 通过 malloc new  任意大小的memory 生存周期由我们自己决定 	
 * **********************************************************************
-* 野指针的产生与防止
-*“野指针”不是 NULL 指针,是指向“垃圾”内存的指针
-*
-*
-*
-*
+* @野指针的产生与防止
+*  - “野指针”不是 NULL 指针,是指向“垃圾”内存的指针
+* 产生野指针有两种原因：
+* 1）free(p) 后没有置  p=NULL如下例子:
+		char *p = (char *) malloc(100);
+			strcpy(p, “hello”);
+			free(p);// p 所指的内存被释放,但是 p 所指的地址仍然不变
+		...
+		if(p != NULL)
+		// 没有起到防错作用
+		{
+			strcpy(p, “world”); // 出错
+		}
+* 2）指针变量没有被初始化，所以指针变量在创建的同时应当被初始化,要么
+     将指针设置为 NULL： char *p = NULL;char *str = (char *) malloc(100);
+* 3）指针操作超越了变量的作用范围 见 Test6()
 *
 */
 #include <iostream>
@@ -19,10 +29,10 @@
 #include <unistd.h>
 #include <fstream>
 using namespace std;
-#define ARRAY_POINT_USE_DIFF 0
-#define MEMEROY_NEW_MALLOC_WA 0
-#define MEMEROY_ERR 1
-#define POINT_OP_MEM 0
+#define ARRAY_POINT_USE_DIFF 0 //数组和指针的注意点
+#define MEMEROY_NEW_MALLOC_WA 0 // 内存安全 操作
+#define MEMEROY_ERR 0 // 常见内存使用错误和面试常见题解析
+#define WILD_POINT 1 //野指针测试
 
 #define SAFE_DETETE(p)	if(NULL != p) { delete(p); p = NULL; } // delete 动态对象 后 要制成 NULL
 #define SAFE_FREE(p) if(NULL != p) {free(p); p = NULL; }
@@ -41,6 +51,7 @@ class MEM_TST
 		MEM_TST(){cout<< "MEM_TST"<<endl;}
 		virtual ~MEM_TST(){};
 		void array_point_tst();
+		void wild_point_tst(){ cout<<"test wild point"<<endl;}
 	private:
 };
 
@@ -95,7 +106,7 @@ void MEM_SON :: loop()
 #if MEMEROY_ERR
 void GetMemory1(char *p, int num)
 {
-	p = (char *)malloc(sizeof(char) * num); // 函数体内的局部变量在函数结束时自动消亡,
+	p = (char *)malloc(sizeof(char) * num); // 函数体内的局部变量在函数结束时自动消亡, 动态内存会自动释放吗?
 /**
 	(1)指针消亡了,并不表示它所指的内存会被自动释放。
     (2)内存被释放了,并不表示指针会消亡或者成了 NULL 指针
@@ -141,13 +152,13 @@ void Test3(void)
 	
 }
 
-char *Getstring1(void) // or char *GetMemory3(int num)
+char *Getstring1(void) // 返回指向“栈内存”的指针
 {
 	char a[] = "Getstring1";
 	return a;
 }
 
-char *Getstring2(void) // or char *GetMemory3(int num)
+char *Getstring2(void) // return 语句返回常量字符串
 {
 	char *p ="Getstring2";
 	return p;
@@ -157,7 +168,7 @@ char *Getstring2(void) // or char *GetMemory3(int num)
 void Test4(void)
 {
 	char *str = NULL;
-	str = Getstring1();
+	str = Getstring1();// str 的内容是垃圾
 	cout << "Test4 : str = "<<str<<endl;
 	
 }
@@ -171,7 +182,17 @@ void Test5(void)
 }
 
 #endif
-
+#if WILD_POINT
+void Test6(void)
+{
+	MEM_TST *p;
+		{
+			MEM_TST a;// 注意 a 的生命期
+			p =&a; // p 是“野指针”
+		}
+	a.wild_point_tst();
+}
+#endif
 int main()
 {
 #if MEMEROY_NEW_MALLOC_WA // safe 操作 内存
@@ -223,7 +244,8 @@ cout << "********************" <<endl;
 
 //	Test4(); // 编译器提出警告，输出不了正常的字符串 警告如下：
 
-/* address of local variable 'a' returned [-Wreturn-local-addr]
+/* 
+   address of local variable 'a' returned [-Wreturn-local-addr]
    ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
 */
 	
@@ -234,14 +256,12 @@ Test5(); // 可以输出字符串
 GetString2 内的“hello world”是常量字符串,位于静态存储区,它在程序生命期内恒定
 不变。无论什么时候调用 GetString2,它返回的始终是同一个“只读”的内存块。
 */
-
+#endif
+#if WILD_POINT
 /** wild pointer **/
-
-
-
+	Test6();
 #endif
 
-	
 	return 0;
 		
 }
