@@ -98,7 +98,7 @@ Derived::Derived(int x,int y)
 
 int main()
 {
-	https://www.baidu.com/
+	https://www.baidu.com/ //不会编译出错
 	Base *b = new Base(7);
 	//Base *bb = new Base(b);
 	Base b1(2);
