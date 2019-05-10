@@ -1,0 +1,7 @@
+1.makefile build
+2.io复用 select
+3.多线程
+4.udp 
+5.tcp/ip
+6.进程间同步
+7.发送 struct 和文件 并拷贝到U盘（可以通过 send 的参数来配是否 拷贝到usb）

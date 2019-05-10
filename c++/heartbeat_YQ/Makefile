@@ -34,6 +34,8 @@ OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV))) #addprefix  组
 	mv $@ $(OBJOUTPUT) 
 
 # $@ = %.o (*.o)
+# $< ——第一个依赖文件
+# gcc -o main.c = gcc -o $@
 
 send:$(OBJS_SEND)$
 	$(GXX) $(OBJS_DIR_SEND) -o $(BINOUTPUT)$@
