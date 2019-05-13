@@ -21,17 +21,17 @@
 #define UEVENT_BUFFER_SIZE 2048
 #define FILE_DEVICE					"/proc/scsi/scsi"  //all device info
 #define FILE_DEV_PART_TEMPL     	"/dev/sr" //cd device
-#define USB_CDROM_MP				"/ssa/Samba/Share/USB-ODD"
+//#define USB_CDROM_MP				"/ssa/Samba/Share/USB-ODD"
 #define FILE_DEVICE_PARTS			"/proc/partitions" //device part info
-#define USB_MEM_MP                	"/ssa/Samba/Share/USBMemory"
-#define USB_DISK_MP                 "/ssa/Samba/Share/USB-HDD"
-#define DISK_MP                 	"/ssa/Samba/Share/HDD"
+//#define USB_MEM_MP                	"/ssa/Samba/Share/USBMemory"
+//#define USB_DISK_MP                 "/ssa/Samba/Share/USB-HDD"
+//#define DISK_MP                 	"/ssa/Samba/Share/HDD"
 #define FILE_MOUNT_CHECK        	"/proc/mounts"   //check mount status
-#define USB_SDCARD_MP               "/ssa/Samba/Share/sdcard"
+//#define USB_SDCARD_MP               "/ssa/Samba/Share/sdcard"
 #define REC_BUS_PATH_CMD			"ls /sys/bus/scsi/devices/0:0:0:0/block"
-#define REC_MP						"/ssa/record"
-#define CDROM_MP					"/ssa/cdrom"
-#define DIR_PATH 					"/ssa/Samba/Share/HDD/HDD"
+//#define REC_MP						"/ssa/record"
+//#define CDROM_MP					"/ssa/cdrom"
+//#define DIR_PATH 					"/ssa/Samba/Share/HDD/HDD"
 
 // global parameter
 pthread_mutex_t devInfolock;
@@ -131,13 +131,14 @@ void stopGetDevInfo()
 	pthread_mutex_unlock(&devInfolock);
 	pthread_mutex_destroy(&devInfolock);
 
-	if (access(REC_MP, R_OK) == 0)
+/*	if (access(REC_MP, R_OK) == 0)
 	{
 		if (umount(REC_MP) == 0)
 		{
 			remove(REC_MP);
 		}
 	}
+*/
 }
 
 // get dev info start
@@ -179,7 +180,7 @@ static void *getDevInfoThread(void *pPara)
 		usbHddFlag = 0;
 		usbExistFlag = 0;
 		findDevice();
-        searchSdcard();
+        //searchSdcard();
 		
 		if (NULL == pOldDev && pFirstDev != NULL)
 		{
@@ -368,7 +369,7 @@ static int initDev(SCSI_USB_DEV *dev, int index, char *type, int *devIndex)
 			return -1;
 		}
 	    sprintf(dev->devfile_parts[0], cdRompath);
-		strcpy(dev->mount_path[0], USB_CDROM_MP);
+        //strcpy(dev->mount_path[0], USB_CDROM_MP);
     }
     else//usb or hdd
     {
@@ -378,7 +379,8 @@ static int initDev(SCSI_USB_DEV *dev, int index, char *type, int *devIndex)
 			return -1;
 		}
     }
-
+    getDevInfo();
+   // printf("usb->type = %d \n",getUSBDevInfo()->type);
     return 0;
 }
 
@@ -436,7 +438,7 @@ static int calcDeviceParts(SCSI_USB_DEV *dev, int *devIndex)
 							{
 								break;
 							}
-							sprintf(dev->mount_path[part_num], USB_MEM_MP"/USBMemory%d", part_num);
+                            //sprintf(dev->mount_path[part_num], USB_MEM_MP"/USBMemory%d", part_num);
 						}
 						else
 						{
@@ -446,7 +448,7 @@ static int calcDeviceParts(SCSI_USB_DEV *dev, int *devIndex)
 								{
 									break;
 								}
-								sprintf(dev->mount_path[part_num], USB_DISK_MP"/USB-HDD%d", part_num);
+//								sprintf(dev->mount_path[part_num], USB_DISK_MP"/USB-HDD%d", part_num);
 							}
 							else
 							{
@@ -459,12 +461,12 @@ static int calcDeviceParts(SCSI_USB_DEV *dev, int *devIndex)
 										if (0 == recordMountStatus)
 										{
 											char mount_cmd[256] = {0};
-											mkdir(REC_MP, 0777);
-											sprintf(mount_cmd, "mount %s %s", dev->devfile_parts[part_num], REC_MP);
-											if (system(mount_cmd) != -1)
-											{
-												recordMountStatus = 1;
-											}
+//											mkdir(REC_MP, 0777);
+//											sprintf(mount_cmd, "mount %s %s", dev->devfile_parts[part_num], REC_MP);
+//											if (system(mount_cmd) != -1)
+//											{
+//												recordMountStatus = 1;
+//											}
 										}
 										memset(dev->devfile_parts[part_num], 0, MAX_NAME_LEN);
 										line = strtok_r(NULL, delim, &strtok_tmp_ptr);
@@ -473,7 +475,7 @@ static int calcDeviceParts(SCSI_USB_DEV *dev, int *devIndex)
 									else
 									{
 										dev->index = 0;
-										sprintf(dev->mount_path[part_num], DISK_MP"/HDD%d", part_num);
+//										sprintf(dev->mount_path[part_num], DISK_MP"/HDD%d", part_num);
 										hddExitFlag = 1;
 									}
 								}
@@ -616,59 +618,59 @@ static void mountCdrom()
 		}
 	}
 
-	sprintf(mount_cmd, "mount %s %s", cdRompath, CDROM_MP);
+//	sprintf(mount_cmd, "mount %s %s", cdRompath, CDROM_MP);
 	if (cdromMountStatus != 0)
 	{
-		if (cdromMountFlag != cdromMountOldFlag)
-		{
-			if (cdromMountFlag == 1)
-			{
-				if (access(CDROM_MP, R_OK) != 0)
-				{
-					mkdir(CDROM_MP, 0777);
-				}
-				ret = system(mount_cmd);
-				if (ret == 0)
-				{
-					umountCdrom();
-					memset(mount_cmd, 0, 256);
-					sprintf(mount_cmd, "mount -t overlayfs -o lowerdir=%s,upperdir=%s overlay %s", CDROM_MP, REC_MP, USB_CDROM_MP);
-					if (system(mount_cmd) == 0)
-					{
-						cdromMountOldFlag = cdromMountFlag;
-						cdromMountStatus = 1;
-					}
-				}
-				else
-				{
-					remove(CDROM_MP);
-				}
-			}
-			else
-			{
-				cdromMountOldFlag = 0;
-				umountCdrom();
-			}
-		}
-		return;
+//		if (cdromMountFlag != cdromMountOldFlag)
+//		{
+//			if (cdromMountFlag == 1)
+//			{
+////				if (access(CDROM_MP, R_OK) != 0)
+////				{
+////					mkdir(CDROM_MP, 0777);
+////				}
+////				ret = system(mount_cmd);
+//				if (ret == 0)
+//				{
+//					umountCdrom();
+//					memset(mount_cmd, 0, 256);
+////					sprintf(mount_cmd, "mount -t overlayfs -o lowerdir=%s,upperdir=%s overlay %s", CDROM_MP, REC_MP, USB_CDROM_MP);
+//					if (system(mount_cmd) == 0)
+//					{
+//						cdromMountOldFlag = cdromMountFlag;
+//						cdromMountStatus = 1;
+//					}
+//				}
+//				else
+//				{
+////					remove(CDROM_MP);
+//				}
+//			}
+//			else
+//			{
+//				cdromMountOldFlag = 0;
+//				umountCdrom();
+//			}
+//		}
+//		return;
 	}
 	
-	mkdir(USB_CDROM_MP, 0777);
-	mkdir(CDROM_MP, 0777);
+//	mkdir(USB_CDROM_MP, 0777);
+//	mkdir(CDROM_MP, 0777);
 
-	ret = system(mount_cmd);
+//	ret = system(mount_cmd);
 	memset(mount_cmd, 0, 256);
 	if (ret == 0)
 	{
-		sprintf(mount_cmd, "mount -t overlayfs -o lowerdir=%s,upperdir=%s overlay %s", CDROM_MP, REC_MP, USB_CDROM_MP);
+//		sprintf(mount_cmd, "mount -t overlayfs -o lowerdir=%s,upperdir=%s overlay %s", CDROM_MP, REC_MP, USB_CDROM_MP);
 	}
 	else
 	{
-		remove(CDROM_MP);
-		sprintf(mount_cmd, "mount %s %s", REC_MP, USB_CDROM_MP);
+//		remove(CDROM_MP);
+//		sprintf(mount_cmd, "mount %s %s", REC_MP, USB_CDROM_MP);
 	}
 
-	system(mount_cmd);
+//	system(mount_cmd);
 	cdromMountStatus = 1;
 }
 
@@ -679,26 +681,26 @@ static void mountDev(SCSI_USB_DEV *pDevInfo, int index)
 
 	char *pTmpdir = getDir(pDevInfo->type);
 	int status = 0;
-	if (strcmp(pTmpdir, DISK_MP) == 0)
-	{
-		if (access(DISK_MP, R_OK) != 0)
-		{
-			mkdir(DISK_MP, 0777);
-		}
-	}
-	else
-	{
-		if (access(pTmpdir, R_OK) != 0)
-		{
-			mkdir(pTmpdir, 0777);
-		}
-	}
+    //if (strcmp(pTmpdir, DISK_MP) == 0)
+//	{
+//		if (access(DISK_MP, R_OK) != 0)
+//		{
+//			mkdir(DISK_MP, 0777);
+//		}
+//	}
+//	else
+//	{
+//		if (access(pTmpdir, R_OK) != 0)
+//		{
+//			mkdir(pTmpdir, 0777);
+//		}
+//	}
 	memset(mount_cmd, 0, 256);
 	
-	if(mkdir(pDevInfo->mount_path[index], 0777) == -1)
-	{
-		printf("mkdir err %d.\n", errno);
-	}
+//	if(mkdir(pDevInfo->mount_path[index], 0777) == -1)
+//	{
+//		printf("mkdir err %d.\n", errno);
+//	}
 
 	if (isNtfsFromat(pDevInfo->devfile_parts[index]) == 1)
 	{
@@ -708,7 +710,8 @@ static void mountDev(SCSI_USB_DEV *pDevInfo, int index)
 	{
 		sprintf(mount_cmd, "mount %s %s", pDevInfo->devfile_parts[index], pDevInfo->mount_path[index]);
 	}
-	status = system(mount_cmd);
+    printf("fun= %s \n",__FUNCTION__);
+ //   status = system(mount_cmd);
 
 	if (pDevInfo->type == 4)
 	{
@@ -719,32 +722,35 @@ static void mountDev(SCSI_USB_DEV *pDevInfo, int index)
 			{
 				memset(hddDir, 0, 256);
 				sprintf(hddDir, "%s/AUTO", pDevInfo->mount_path[index]);
+                printf("hddDir = %s , %s \n",hddDir,__func__);
 				if (access(hddDir, R_OK) != 0)
 				{
 					mkdir(hddDir, 0777);
 				}
 
-				if (access(DIR_PATH, R_OK) != 0)
+/*				if (access(DIR_PATH, R_OK) != 0)
 				{
 					mkdir(DIR_PATH, 0777);
 				}
+*/
 			}
 			else
 			{
 				memset(hddDir, 0, 256);
 				sprintf(hddDir, "%s/AUTO", pDevInfo->mount_path[index]);
+                printf("hddDir = %s , %s \n",hddDir,__func__);
 				if (access(hddDir, R_OK) != 0)
 				{
 					mkdir(hddDir, 0777);
 				}
 
-				if (access(DIR_PATH, R_OK) != 0)
-				{
-					mkdir(DIR_PATH, 0777);
-				}
+//				if (access(DIR_PATH, R_OK) != 0)
+//				{
+//					mkdir(DIR_PATH, 0777);
+//				}
 				memset(hddDir, 0, 256);
 				sprintf(hddDir, "%s/MANUAL", pDevInfo->mount_path[index]);
-				//printf("hddDir = %s\n", hddDir);
+                printf("hddDir = %s\n", hddDir);
 				if (access(hddDir, R_OK) != 0)
 				{
 					mkdir(hddDir, 0777);
@@ -778,6 +784,7 @@ void doMount()
 				else if (pDevInfo->type == 2)
 				{
 					pDevInfo->freeDiskSize[index] = getDiskInfo(pDevInfo->mount_path[index]);
+                    printf("(yl --- >pDevInfo->mount_path[index] =%s, %s",pDevInfo->mount_path[index],__FUNCTION__);
 					usbMountFlag = 1;
 				}
 				else
@@ -789,11 +796,11 @@ void doMount()
 			{
 				if (pDevInfo->type == 1)
 				{
-					mountCdrom();
+//					mountCdrom();
 				}
 				else
 				{
-					mountDev(pDevInfo, index);
+                    //mountDev(pDevInfo, index);
 				}
 			}
 		}
@@ -811,35 +818,35 @@ static void umountCdrom()
 		return;
 	}
 
-	if (access(USB_CDROM_MP, R_OK) == 0)
-	{
-		char cmd[256] = {0};
-		sprintf(cmd, "fuser -k "USB_CDROM_MP);
-		system(cmd);
-	    if (umount(USB_CDROM_MP) == 0)
-	    {
-			remove(USB_CDROM_MP);
+//	if (access(USB_CDROM_MP, R_OK) == 0)
+//	{
+//		char cmd[256] = {0};
+////		sprintf(cmd, "fuser -k "USB_CDROM_MP);
+//		system(cmd);
+//	    if (umount(USB_CDROM_MP) == 0)
+//	    {
+//			remove(USB_CDROM_MP);
 
-			if (access(CDROM_MP, R_OK) == 0)
-			{
-				memset(cmd, 0, sizeof(cmd));
-				sprintf(cmd, "fuser -k "CDROM_MP);
-				system(cmd);
-				if (umount(CDROM_MP) == 0)
-				{
-					remove(CDROM_MP);
-				}
-				else
-				{
-					printf("umount %s failed\n", CDROM_MP);
-				}
-			}
-	    }
-	    else
-	    {
-	        printf("umount %s failed\n", FILE_DEV_PART_TEMPL);
-	    }
-	}
+//			if (access(CDROM_MP, R_OK) == 0)
+//			{
+//				memset(cmd, 0, sizeof(cmd));
+////				sprintf(cmd, "fuser -k "CDROM_MP);
+//				system(cmd);
+//				if (umount(CDROM_MP) == 0)
+//				{
+//					remove(CDROM_MP);
+//				}
+//				else
+//				{
+//					printf("umount %s failed\n", CDROM_MP);
+//				}
+//			}
+//	    }
+//	    else
+//	    {
+//	        printf("umount %s failed\n", FILE_DEV_PART_TEMPL);
+//	    }
+//	}
 	cdromMountStatus = 0;
 }
 
@@ -859,17 +866,17 @@ static int doUmount(SCSI_USB_DEV *dev)
         {
 			if (access(dev->mount_path[index], R_OK) == 0)
 			{
-				sprintf(cmd, "fuser -k %s/SD", USB_SDCARD_MP);
-				system(cmd);
+//				sprintf(cmd, "fuser -k %s/SD", USB_SDCARD_MP);
+//				system(cmd);
 				//printf("**** cmd = %s ****\n", cmd);
-		        if (umount(USB_SDCARD_MP"/SD") == 0)
-		        {
-		            remove(USB_SDCARD_MP"/SD");
-		        }
-		        else
-		        {
-		            printf("umount %s failed\n", dev->mount_path[index]);
-		        }
+//		        if (umount(USB_SDCARD_MP"/SD") == 0)
+//		        {
+//		            remove(USB_SDCARD_MP"/SD");
+//		        }
+//		        else
+//		        {
+//		            printf("umount %s failed\n", dev->mount_path[index]);
+//		        }
 			}
         }
 	}
@@ -881,7 +888,7 @@ static int doUmount(SCSI_USB_DEV *dev)
 			if (access(dev->mount_path[index], R_OK) == 0)
 			{
 				sprintf(cmd, "fuser -k %s", dev->mount_path[index]);
-				system(cmd);
+//			system(cmd);
 		        if (umount(dev->mount_path[index]) == 0)
 		        {
 		            remove(dev->mount_path[index]);
@@ -895,35 +902,35 @@ static int doUmount(SCSI_USB_DEV *dev)
 			}
         }
 		char *pTmpdir = getDir(dev->type);
-		if (strcmp(pTmpdir, DISK_MP) == 0)
-		{
-			if (access(DISK_MP, R_OK) == 0)
-			{
-				char cmd[256] = {0};
-				sprintf(cmd, "fuser -k %s", dev->mount_path[0]);
-				printf("dev->mount_path[0] = %s\n", dev->mount_path[0]);
-				system(cmd);
-				umount(dev->mount_path[0]);
-				remove(DISK_MP);
-			}
+//		if (strcmp(pTmpdir, DISK_MP) == 0)
+//		{
+//			if (access(DISK_MP, R_OK) == 0)
+//			{
+//				char cmd[256] = {0};
+//				sprintf(cmd, "fuser -k %s", dev->mount_path[0]);
+//				printf("dev->mount_path[0] = %s\n", dev->mount_path[0]);
+//				system(cmd);
+//				umount(dev->mount_path[0]);
+//				remove(DISK_MP);
+//			}
 
-			if (access(REC_MP, R_OK) == 0)
-			{
-				if (umount(REC_MP) == 0)
-				{
-					remove(REC_MP);
-				}
-			}
-			recordMountStatus = 0;
-			hddExitFlag = 0;
-		}
-		else
-		{
-			if (access(pTmpdir, R_OK) == 0)
-			{			
-				remove(pTmpdir);
-			}
-		}
+//			if (access(REC_MP, R_OK) == 0)
+//			{
+//				if (umount(REC_MP) == 0)
+//				{
+//					remove(REC_MP);
+//				}
+//			}
+//			recordMountStatus = 0;
+//			hddExitFlag = 0;
+////		}
+//		else
+//		{
+//			if (access(pTmpdir, R_OK) == 0)
+//			{
+//				remove(pTmpdir);
+//			}
+//		}
     }
 
     return 0;
@@ -934,16 +941,16 @@ static char *getDir(int type)
 	switch (type)
 	{
 		case 2:
-			return USB_MEM_MP;
+//			return USB_MEM_MP;
 
 		case 3:
-			return USB_DISK_MP;
+//			return USB_DISK_MP;
 
 		case 4:
-			return DISK_MP;
+//			return DISK_MP;
 
 		case 5:
-			return USB_SDCARD_MP;
+//			return USB_SDCARD_MP;
 		default:
 			break;
 	}
@@ -1013,7 +1020,7 @@ static void searchSdcard()
 				}
 				buf_ps[strlen(buf_ps) - 1] = 0;
 				sprintf(new_dev->devfile_parts[index], "/dev/%s", buf_ps);
-				sprintf(new_dev->mount_path[index], "%s/SD%d", USB_SDCARD_MP, index);
+//				sprintf(new_dev->mount_path[index], "%s/SD%d", USB_SDCARD_MP, index);
 				index++;
 				break;
 			}
@@ -1066,11 +1073,13 @@ static void getRecHddName()
 	char ps[50] = {0};
     FILE *ptr = NULL;
     strcpy(ps, REC_BUS_PATH_CMD);
+    printf("REC_BUS_PATH_CMD = %s \n",REC_BUS_PATH_CMD);
 	
     if ((ptr = popen(ps, "r")) != NULL)
     {
 		fgets(recHdd, 10, ptr);
 		recHdd[strlen(recHdd) - 1] = 0;
+        printf("recHdd = %s \n",recHdd);
 		pclose(ptr);
         ptr = NULL;
 	}
@@ -1095,7 +1104,7 @@ int umountDev(int devType)
 				{
 					sprintf(cmd, "eject -s %s", cur_dev->devfile_parts[0]);
 					cmd[strlen(cmd) - 1] = 0;
-					ret = system(cmd);
+//				ret = system(cmd);
 					usbEjectFlag = 1;
 				}
 				else
@@ -1111,15 +1120,15 @@ int umountDev(int devType)
 						}
 					}
 					sprintf(cmd, "eject -s %s", cdRompath);
-					ret = system(cmd);
+    //			ret = system(cmd);
 				
 					if (ret != -1)
 					{
 						cdromEjectFlag = 1;
 						memset(cmd, 0, sizeof(cmd));
-						sprintf(cmd, "fuser -k "REC_MP);
+//						sprintf(cmd, "fuser -k "REC_MP);
 						system(cmd);
-						umount(REC_MP);
+//						umount(REC_MP);
 						recordMountStatus = 0;
 					}
 				}
@@ -1260,19 +1269,19 @@ int isNtfsFromat(char *pPath)
 	FILE *ptr = NULL;
 	int ret = 0;
 
-	sprintf(tmpBuf,"fdisk -l | grep %s", pPath);
-    if ((ptr = popen(tmpBuf, "r")) != NULL)
-    {
-        while (fgets(dataBuf, 256, ptr)!=NULL)
-        {
-			if (strstr(dataBuf, "NTFS") != NULL)
-			{
-				ret = 1;
-				break;
-			}
-		}
-		pclose(ptr);
-	}
+    //sprintf(tmpBuf,"fdisk -l | grep %s", pPath);
+//    if ((ptr = popen(tmpBuf, "r")) != NULL)
+//    {
+//        while (fgets(dataBuf, 256, ptr)!=NULL)
+//        {
+//			if (strstr(dataBuf, "NTFS") != NULL)
+//			{
+//				ret = 1;
+//				break;
+//			}
+//		}
+//		pclose(ptr);
+//	}
 
 	return ret;
 }

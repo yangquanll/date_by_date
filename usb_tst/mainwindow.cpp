@@ -8,8 +8,23 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 }
 
+void MainWindow:: on_checkusb(void)
+{
+    startGetDevInfo();
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+
+void MainWindow::on_checkButton_clicked()
+{
+    startGetDevInfo();
+}
+
+void MainWindow::on_getnwtButton_clicked()
+{
+   printf("yL --- >getUSBMountFlag = %d \n",getUSBMountFlag());
+}

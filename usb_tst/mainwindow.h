@@ -17,11 +17,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void on_checkusb(void);
+    void on_checkButton_clicked();
+    void on_getnwtButton_clicked();
 };
 
-class Search : public QMainWindow
+class Search
 {
-    Q_OBJECT
 
 public:
     Search() {}
@@ -32,11 +36,10 @@ public:
 
 };
 
-class Netwok
+class Netwok : public Search
 {
     public:
-
-
+        Netwok();
 };
 
 #endif // MAINWINDOW_H
