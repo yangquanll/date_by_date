@@ -47,7 +47,7 @@ Udp_Net ::Udp_Net(void)
 
 Udp_Net ::~Udp_Net(void)
 {
-
+	
 }
 
 int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
@@ -195,6 +195,24 @@ Recv :: ~Recv()
 		exit(0);
 	}
 	printf("recv_buflen = %d,recvbuff = %s \n",re.recv_size,re.recvbuff);
+}
+
+bool Recv :: start()
+{
+	int ret;
+	ret = pthread_create(&recvThreadId,NULL,recvthread,(void*)this);
+	if(ret)
+	{
+		printf("recv pthrteat_creat error \n");
+		exit(0);
+	}
+	ret = -1;	
+	ret = pthread_join(recvThreadId,NULL);
+	if(ret)
+	{
+		printf("recv pthread_join error \n");
+		exit(0);
+	}
 }
 //==============================================================
 // send

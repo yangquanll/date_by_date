@@ -10,6 +10,8 @@
 #include <pthread.h>
 #define MAX_MSG_LEN 1024
 #define CYCLE_MS 		5000
+
+//#define SAFE_DETETE(p)  if(NULL != p) { delete(p); p = NULL; } 
 class Udp_Net
 {
 public:
@@ -34,8 +36,8 @@ public:
 	Udp_Net udpnet;
 	static void* recvthread(void* param);
 	pthread_t recvThreadId;
-	char bufrev[MAX_MSG_LEN];
-	char *recvbuff;
+
+	char recvbuff[MAX_MSG_LEN];
 	int recv_size;
 	bool start(void);
 	
