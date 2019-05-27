@@ -37,8 +37,7 @@ public:
 	static void* recvthread(void* param);
 	pthread_t recvThreadId;
 
-	char recvbuff[MAX_MSG_LEN];
-	int recv_size;
+	//char recvbuff[MAX_MSG_LEN];
 	bool start(void);
 	
 };

@@ -64,7 +64,7 @@ int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
 	local.sin_family = AF_INET;// ipv4
 	local.sin_addr.s_addr = htonl(ip); //网络转换接口
 	local.sin_port = htons(port);
-	printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.166"),inet_ntoa(local.sin_addr));
+	printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.185"),inet_ntoa(local.sin_addr));
 	if(bind(udpskt,(struct sockaddr *) &local,sizeof(local)) == ERRSOCKET) //udp 没有 connect()
  	{
 		printf("error bind()\n");
@@ -166,14 +166,13 @@ void Udp_Net :: NetClose()
 //==============================================================
 // recv 
 //==============================================================
-#define SEND_IPADDR inet_addr("192.168.20.166")
+#define SEND_IPADDR inet_addr("192.168.20.128")
 #define SEND_PORT 5500
 
 Recv :: Recv()
 {
 	memset(&recvThreadId, 0, sizeof(pthread_t)); //后面是 类型
-	memset(recvbuff, 0, sizeof(recvbuff));
-	recv_size = 0;
+	//memset(recvbuff, 0, sizeof(recvbuff));
 	
 }
 
@@ -184,30 +183,31 @@ Recv :: ~Recv()
 
 /*static*/ void* Recv :: recvthread(void* param)
 {	
-	int bufflen;
+	int bufflen,recv_size;
 	Recv re;
-	bufflen = sizeof(re.recvbuff);
+	char recvbuff[250];
+	bufflen = sizeof(recvbuff);
 	sockaddr_in sockAddr;
 	sockAddr.sin_family = AF_INET;
-	memset(re.recvbuff,0,bufflen);
-	
+	memset(recvbuff, 0, sizeof(recvbuff));
 	while(1)
 	{
-		re.recv_size = re.udpnet.NetRcv(re.udpnet.udpskt, sockAddr, re.recvbuff, bufflen, CYCLE_MS); //5000 ms
-		if(re.recv_size = ERRSOCKET)
+		recv_size = re.udpnet.NetRcv(re.udpnet.udpskt, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
+		if(recv_size = ERRSOCKET)
 		{
 			printf("NetRcv  error \n");
 			re.udpnet.NetClose();
-			re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
+			//re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
 			exit(0);
 		}
-	}	printf("recv_buflen = %d,recvbuff = %s \n",re.recv_size,re.recvbuff);
+	}
+	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,recvbuff);
 }
 
 bool Recv :: start()
 {
 	int ret;
-	ret = pthread_create(&recvThreadId,NULL,recvthread,(void*)this);
+	ret = pthread_create(&recvThreadId,NULL,recvthread,(void *)this);
 	if(ret)
 	{
 		printf("recv pthrteat_creat error \n");
@@ -269,8 +269,8 @@ Send:: ~Send()
 
 int Send::senddata()
 {
-	char *sendbuff =  "CALLING YL 6666";
-	int buflen = sizeof(sendbuff);
+	char sendbuff[250];
+	char tmp[250] = "[yq] send- ";
 	int sendsize;
 	int i;
 	sockaddr_in socsend;
@@ -279,12 +279,14 @@ int Send::senddata()
 	socsend.sin_port = htons(dest_port);
 	while(1)
 	{
-		sprintf(sendbuff," +%d",i++);
+		sprintf(sendbuff," %s + %d",tmp,i++);
+		int buflen = sizeof(sendbuff);
+		printf(" sendbuff = %s  buflen = %d\n",sendbuff,buflen);
 		sendsize = udpnet.NetSend(udpnet.udpskt, socsend, sendbuff, buflen);
 		printf("sendsize = %d\n",sendsize);
 		sleep(1);
-		return sendsize;
 	}
+	return sendsize;
 }
 
 /* static */void* Send :: sendthread(void* param) // 静态的函数 只能call 静态的变量或者函数

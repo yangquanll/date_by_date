@@ -21,10 +21,10 @@ int main(int argc, char *argv[ ])
 {
 	Send *sed = new Send();
 	sed->start();
-	while(1)
-	{
-		sleep(2);
-	}
+//	while(1)
+//	{
+//		sleep(2);
+//	}
 
 }
 

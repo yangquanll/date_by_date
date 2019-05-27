@@ -23,7 +23,7 @@ HBUdpNetADP::HBUdpNetADP(int _local_port)
 
 bool HBUdpNetADP::NetInit()
 {
-    if (UDPSocket != INVALID_SOCKET)
+   if (UDPSocket != INVALID_SOCKET)
     {   
 		NetClose();
     }
@@ -103,6 +103,7 @@ bool HBUdpNetADP::NetRecv(char* recv_buff, int &recv_len, double time_out_sec, U
 
    	if (recv_len == SOCKET_ERROR)
 	{
+    printf("____-----NetRcv error \n");
 		NetClose();
 		NetInit();
 		return false;
@@ -139,7 +140,7 @@ extern bool HeartbeatDbg_ON();
 extern bool HeartbeatPkgUT_ON();
 
 /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_SRC_PORT 	= 5400;
-/* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_IP 	= inet_addr("192.168.20.166");	//127.0.0.1
+/* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_IP 	= inet_addr("127.0.0.1");	//127.0.0.1 192.168.20.185
 /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_PORT 	= 5500;
 
 /* static */ const char* Heartbeat::counter_name[HEARTBEAT_COUNTER_NUM] = {
