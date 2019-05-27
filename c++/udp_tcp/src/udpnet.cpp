@@ -189,6 +189,8 @@ Recv :: ~Recv()
 	bufflen = sizeof(recvbuff);
 	sockaddr_in sockAddr;
 	sockAddr.sin_family = AF_INET;
+	sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
+	sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
 	memset(recvbuff, 0, sizeof(recvbuff));
 	while(1)
 	{
