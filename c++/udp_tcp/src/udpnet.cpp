@@ -36,6 +36,7 @@ INADDR_ANY
 #include "udpnet.h"
 #include <error.h>
 #include <string.h>
+#include <stdlib.h>
 #define ERRSOCKET -1
 #define ERRBIND -1
 #define ERRSELECT -1
@@ -89,15 +90,18 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 {
 	int sendlen = 0;
 	socklen_t addrlen = sizeof(remote_addr);
-	sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);
+	//while(1)
+//	{
+		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);
 	
-	if(sendlen == ERRSOCKET)
-	{
-		printf("sendto error \n");
+		if(sendlen == ERRSOCKET)
+		{
+			printf("sendto error \n");
+			return sendlen;
+		}
+	
 		return sendlen;
-	}
-	
-	return sendlen;
+//	}
 }
 
 int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, double timeout)
@@ -186,15 +190,18 @@ Recv :: ~Recv()
 	sockaddr_in sockAddr;
 	sockAddr.sin_family = AF_INET;
 	memset(re.recvbuff,0,bufflen);
-	re.recv_size = re.udpnet.NetRcv(re.udpnet.udpskt, sockAddr, re.recvbuff, bufflen, CYCLE_MS); //5000 ms
-	if(re.recv_size = ERRSOCKET)
+	
+	while(1)
 	{
-		printf("NetRcv  error \n");
-		re.udpnet.NetClose();
-		re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
-		exit(0);
-	}
-	printf("recv_buflen = %d,recvbuff = %s \n",re.recv_size,re.recvbuff);
+		re.recv_size = re.udpnet.NetRcv(re.udpnet.udpskt, sockAddr, re.recvbuff, bufflen, CYCLE_MS); //5000 ms
+		if(re.recv_size = ERRSOCKET)
+		{
+			printf("NetRcv  error \n");
+			re.udpnet.NetClose();
+			re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
+			exit(0);
+		}
+	}	printf("recv_buflen = %d,recvbuff = %s \n",re.recv_size,re.recvbuff);
 }
 
 bool Recv :: start()
@@ -215,7 +222,7 @@ bool Recv :: start()
 	}
 }
 //==============================================================
-// send
+// end
 //==============================================================
 Send :: Send()
 {
@@ -265,14 +272,19 @@ int Send::senddata()
 	char *sendbuff =  "CALLING YL 6666";
 	int buflen = sizeof(sendbuff);
 	int sendsize;
+	int i;
 	sockaddr_in socsend;
 	socsend.sin_family = AF_INET;// ipv4
 	socsend.sin_addr.s_addr = this->dest_ip; //网络转换接口
 	socsend.sin_port = htons(dest_port);
-	
-	sendsize = udpnet.NetSend(udpnet.udpskt, socsend, sendbuff, buflen);
-	printf("sendsize = %d\n",sendsize);
-	return sendsize;
+	while(1)
+	{
+		sprintf(sendbuff," +%d",i++);
+		sendsize = udpnet.NetSend(udpnet.udpskt, socsend, sendbuff, buflen);
+		printf("sendsize = %d\n",sendsize);
+		sleep(1);
+		return sendsize;
+	}
 }
 
 /* static */void* Send :: sendthread(void* param) // 静态的函数 只能call 静态的变量或者函数
