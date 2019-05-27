@@ -36,9 +36,10 @@ public:
 	Udp_Net udpnet;
 	static void* recvthread(void* param);
 	pthread_t recvThreadId;
-
+	int udpskt_recv;
 	//char recvbuff[MAX_MSG_LEN];
 	bool start(void);
+	int recvdata(void);
 	
 };
 

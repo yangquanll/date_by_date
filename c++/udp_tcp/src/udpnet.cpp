@@ -64,7 +64,7 @@ int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
 	local.sin_family = AF_INET;// ipv4
 	local.sin_addr.s_addr = htonl(ip); //网络转换接口
 	local.sin_port = htons(port);
-	printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.185"),inet_ntoa(local.sin_addr));
+	//printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.185"),inet_ntoa(local.sin_addr));
 	if(bind(udpskt,(struct sockaddr *) &local,sizeof(local)) == ERRSOCKET) //udp 没有 connect()
  	{
 		printf("error bind()\n");
@@ -90,8 +90,7 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 {
 	int sendlen = 0;
 	socklen_t addrlen = sizeof(remote_addr);
-	//while(1)
-//	{
+
 		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);
 	
 		if(sendlen == ERRSOCKET)
@@ -101,7 +100,7 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 		}
 	
 		return sendlen;
-//	}
+
 }
 
 int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, double timeout)
@@ -132,7 +131,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(udpskt, &fd);
-	
+#if 0	
 	rcv = select( udpskt + 1, &fd, NULL, NULL, &tWait); //&tWait  Blocking process unlock NULL 
 	if(rcv == ERRSELECT)
 	{
@@ -145,7 +144,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 		goto safe_exit;
 	}
 	// rcv if = > 0 接收 当监视的相应的文件描述符集中满足条件时，比如说读文件描述符集中有数据到来时，内核(I/O)根据状态修改文件描述符集，并返回一个大于0 的数	
-
+#endif
 	rcv = recvfrom(udpskt, rcvbuf, bufflen, 0, (sockaddr *)(&addr), &addrlen);
 	if(rcv == ERRSOCKET)
 	{
@@ -181,10 +180,10 @@ Recv :: ~Recv()
 	udpnet.NetClose();
 }
 
-/*static*/ void* Recv :: recvthread(void* param)
-{	
+int Recv :: recvdata()
+{
 	int bufflen,recv_size;
-	Recv re;
+
 	char recvbuff[250];
 	bufflen = sizeof(recvbuff);
 	sockaddr_in sockAddr;
@@ -192,18 +191,37 @@ Recv :: ~Recv()
 	sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
 	sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
 	memset(recvbuff, 0, sizeof(recvbuff));
+
+	udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
+	if(udpskt_recv == ERRSOCKET)
+	{
+		printf("socket() failed\n");
+
+	}
 	while(1)
 	{
-		recv_size = re.udpnet.NetRcv(re.udpnet.udpskt, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
+		recv_size = udpnet.NetRcv(udpskt_recv, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
 		if(recv_size = ERRSOCKET)
 		{
 			printf("NetRcv  error \n");
-			re.udpnet.NetClose();
+			udpnet.NetClose();
 			//re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
 			exit(0);
 		}
 	}
 	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,recvbuff);
+	return recv_size;
+	
+}
+/*static*/ void* Recv :: recvthread(void* param)
+{	
+	Recv *re = (Recv*)param;
+	if(re->recvdata() == ERRSELECT)
+	{
+		re->udpnet.NetClose();
+		printf("recvdata error re =%d \n",re);
+	}
+	sleep(1);
 }
 
 bool Recv :: start()
