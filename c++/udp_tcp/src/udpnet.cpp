@@ -29,7 +29,7 @@ return:
 I/O复用输入/输出模型。select系统调用是用来让我们的程序监视多个文件句柄的状态变化的。程序会停在select这里等待，直到被监视的文件句柄中有一个或多个发生生了状态改变
 - setsockopt()
 https://blog.csdn.net/c1520006273/article/details/50420408
-INADDR_ANY
+INADDR_ANY 允许任意ip 链接
 
 **/	
 #include <unistd.h>
@@ -84,6 +84,8 @@ if(setsockopt(udpskt,SOL_SOCKET,SO_LINGER,&opt,sizeof(struct linger)) == -1)
 
 safe_exit:
 	return udpskt;
+	
+return udpskt;	
 }
 
 int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int bufflen)
@@ -167,6 +169,7 @@ void Udp_Net :: NetClose()
 //==============================================================
 #define SEND_IPADDR inet_addr("192.168.20.128")
 #define SEND_PORT 5500
+#define RECV_PORT 5400
 
 Recv :: Recv()
 {
@@ -188,8 +191,8 @@ int Recv :: recvdata()
 	bufflen = sizeof(recvbuff);
 	sockaddr_in sockAddr;
 	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
-	sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
+	//sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
+	//sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
 	memset(recvbuff, 0, sizeof(recvbuff));
 
 	udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
@@ -227,6 +230,7 @@ int Recv :: recvdata()
 bool Recv :: start()
 {
 	int ret;
+	udpnet.NetInit(INADDR_ANY, RECV_PORT);
 	ret = pthread_create(&recvThreadId,NULL,recvthread,(void *)this);
 	if(ret)
 	{
