@@ -65,6 +65,7 @@ int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
 	local.sin_addr.s_addr = htonl(ip); //网络转换接口
 	local.sin_port = htons(port);
 	//printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.185"),inet_ntoa(local.sin_addr));
+	printf("udpskt = %d\n",udpskt);
 	if(bind(udpskt,(struct sockaddr *) &local,sizeof(local)) == ERRSOCKET) //udp 没有 connect()
  	{
 		printf("error bind()\n");
@@ -129,11 +130,11 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 		goto safe_exit;
 	}	
 	
-	
+#if 0		
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(udpskt, &fd);
-#if 0	
+
 	rcv = select( udpskt + 1, &fd, NULL, NULL, &tWait); //&tWait  Blocking process unlock NULL 
 	if(rcv == ERRSELECT)
 	{
@@ -148,6 +149,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 	// rcv if = > 0 接收 当监视的相应的文件描述符集中满足条件时，比如说读文件描述符集中有数据到来时，内核(I/O)根据状态修改文件描述符集，并返回一个大于0 的数	
 #endif
 	rcv = recvfrom(udpskt, rcvbuf, bufflen, 0, (sockaddr *)(&addr), &addrlen);
+	printf("recv_size = %d rcvbuf = %s \n",rcv,rcvbuf);
 	if(rcv == ERRSOCKET)
 	{
 		printf("rcv error \n");
@@ -194,8 +196,9 @@ int Recv :: recvdata()
 	//sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
 	//sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
 	memset(recvbuff, 0, sizeof(recvbuff));
-
-	udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
+	udpskt_recv = udpnet.NetInit(INADDR_ANY, RECV_PORT);
+	//udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
+	printf("udpskt_recv = %d\n",udpskt_recv);
 	if(udpskt_recv == ERRSOCKET)
 	{
 		printf("socket() failed\n");
@@ -204,6 +207,7 @@ int Recv :: recvdata()
 	while(1)
 	{
 		recv_size = udpnet.NetRcv(udpskt_recv, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
+		printf("recv_size = %d recv_size = %s \n",recv_size,recv_size);
 		if(recv_size = ERRSOCKET)
 		{
 			printf("NetRcv  error \n");
@@ -230,7 +234,7 @@ int Recv :: recvdata()
 bool Recv :: start()
 {
 	int ret;
-	udpnet.NetInit(INADDR_ANY, RECV_PORT);
+	//udpnet.NetInit(INADDR_ANY, RECV_PORT);
 	ret = pthread_create(&recvThreadId,NULL,recvthread,(void *)this);
 	if(ret)
 	{
