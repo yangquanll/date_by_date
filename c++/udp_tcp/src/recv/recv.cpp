@@ -6,6 +6,7 @@
 int main(int argc, char *argv[ ])
 {
 	Recv *rcv = new Recv;
+	printf("come man()\n");
 	rcv->start();
 	//while()
 }
