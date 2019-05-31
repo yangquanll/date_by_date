@@ -95,7 +95,7 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 	int sendlen = 0;
 	socklen_t addrlen = sizeof(remote_addr);
 
-		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);
+		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);//send qian要 sleep()
 	
 		if(sendlen == ERRSOCKET)
 		{

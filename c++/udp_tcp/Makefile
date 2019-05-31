@@ -7,7 +7,7 @@ CFLAG = -Wall -c # -Wall显示所有警告，-g 可调试，-c编译
 
 #set source tree
 INCLUDE = ./src/include
-SRC_DIR = ./src
+SRC_DIR = ./src/common
 SRC_SR = ./src/send
 SRC_RR = ./src/recv
 Allcpp = $(shell find -name *.cpp) # 使用Linux 命令要用 $(shell cmd) =  AllDirs + foreach

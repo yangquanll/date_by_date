@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> //sleep()
-
+#include "opfiles.h"
 
 #define SAFE_DELETE(p) {if((p) != NULL) delete [] (p); (p) = NULL;}
 
@@ -16,15 +16,18 @@ typedef struct send_data
 }SEND_DATA;
 
 Udp_Net *gudpnet;
-
-int main(int argc, char *argv[ ])
+FilesOperation *fo;
+int main(int argc, char *argv[])
 {
+	printf("argc = %d, *argv[] = %s\n",argc ,argv[argc-1]);
+	if(argv[argc-1] == NULL)
+	{
+		printf("please input file \n");
+		exit(0);
+	}
+	fo->get_file_op(argv[argc-1]);
 	Send *sed = new Send();
 	sed->start();
-//	while(1)
-//	{
-//		sleep(2);
-//	}
 
 }
 
