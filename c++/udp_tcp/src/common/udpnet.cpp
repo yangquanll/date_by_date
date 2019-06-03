@@ -109,7 +109,6 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 
 int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, double timeout)
 {
-	printf("ip =%s port = %d",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
 	int rcv = 0;
 	socklen_t addrlen = sizeof(addr);
 	struct timeval	tWait;
@@ -117,8 +116,8 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 	int sec = timeout;
 	int usec = (int)(timeout * 1000 * 1000) % (1000 * 1000);
     
-	tWait.tv_sec = sec;
-	tWait.tv_usec = usec;
+	tWait.tv_sec = 5;
+	tWait.tv_usec = 0;
 	
 	if (rcvbuf == NULL)
 	{
@@ -132,17 +131,18 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 		goto safe_exit;
 	}	
 
-	printf("ip =%s port = %d",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
-#if 0		
+	printf("ip =%s port = %d\n",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
+#if 1 		
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(udpskt, &fd);
 
 	rcv = select( udpskt + 1, &fd, NULL, NULL, &tWait); //&tWait  Blocking process unlock NULL 
+	printf("select rcv = %d\n",rcv);
 	if(rcv == ERRSELECT)
 	{
 		printf(" receive select error \n");
-		goto safe_exit;
+	//	goto safe_exit;
 	}
 	else if(rcv == 0)
 	{
@@ -153,6 +153,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 #endif
 	rcv = recvfrom(udpskt, rcvbuf, bufflen, 0, (sockaddr *)(&addr), &addrlen);
 	printf("recv_size = %d rcvbuf = %s \n",rcv,rcvbuf);
+	memset(rcvbuf,0,sizeof(rcvbuf));
 	if(rcv == ERRSOCKET)
 	{
 		printf("rcv error \n");
@@ -200,7 +201,7 @@ int Recv :: recvdata()
 	//sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
 	//sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
 	memset(recvbuff, 0, sizeof(recvbuff));
-	udpskt_recv = udpnet.NetInit(INADDR_ANY, SEND_PORT);
+	udpskt_recv = udpnet.NetInit(INADDR_ANY, SEND_PORT); //server client port same !
 	//udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
 	printf("udpskt_recv = %d\n",udpskt_recv);
 	if(udpskt_recv == ERRSOCKET)
@@ -211,14 +212,14 @@ int Recv :: recvdata()
 	while(1)
 	{
 		recv_size = udpnet.NetRcv(udpskt_recv, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
-		printf("recv_size = %d recv_size = %s \n",recv_size,recv_size);
-		if(recv_size = ERRSOCKET)
+		if(recv_size == ERRSOCKET)
 		{
 			printf(" NetRcv  error \n");
-			udpnet.NetClose();
+			//udpnet.NetClose();
 			//re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
-			exit(0);
+			//exit(0);
 		}
+		//sleep(1);
 	}
 	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,recvbuff);
 	return recv_size;
