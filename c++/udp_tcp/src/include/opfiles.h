@@ -23,5 +23,5 @@ class FilesOperation
 public:
 	FilesOperation();
 	~FilesOperation();
-	FILES* get_file_op(char *name);
+	FILES get_file_op(char *name);
 };

@@ -37,6 +37,7 @@ INADDR_ANY 允许任意ip 链接
 #include <error.h>
 #include <string.h>
 #include <stdlib.h>
+//#include "opfiles.h"
 #define ERRSOCKET -1
 #define ERRBIND -1
 #define ERRSELECT -1
@@ -265,6 +266,11 @@ Send :: Send()
 	memset(bufsed, 0, sizeof(bufsed));
 	//printf(" send dest_ip =%d,dest_port = %d\n",inet_addr("192.168.20.166"),dest_port); // 打印的类型要一致 要不然会出现段错误
 	send_size = 0;
+}
+
+ Send :: Send(FILES fl)
+{
+
 }
 
 bool Send :: start(int _dest_ip, int _dest_port)

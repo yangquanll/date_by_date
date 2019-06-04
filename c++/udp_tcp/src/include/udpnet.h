@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <pthread.h>
+#include "opfiles.h"
 #define MAX_MSG_LEN 1024
 #define CYCLE_MS 		5000
 
@@ -47,6 +48,7 @@ class Send //dest_socket
 {
 public:
 	Send();
+	Send(FILES fl);
 	~Send();
 	Udp_Net udpnet;
 	int udpskt;
