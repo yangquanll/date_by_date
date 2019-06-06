@@ -14,7 +14,6 @@ typedef struct files
 {
 	char *name;
 	char data[MAX_DATA_SIZE];
-	int nalen;
 	long data_size;
 }FILES;
 

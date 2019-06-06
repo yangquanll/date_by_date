@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <assert.h>
+#include "devmanager.h"
 
 #define SEND_FILE "yq.webm"
 
@@ -40,7 +41,11 @@ int main(int argc, char *argv[])
 	fread(files.data,sizeof(char),MAX_DATA_SIZE,fp);
 	printf("files.data = %ld\n",files.data,files.name);	
 	Send *sed = new Send(files);
-	sed->start();
-
+	//sed->start();
+while(1)
+{
+	printf("startGetDevInfo() = %d\n",startGetDevInfo());
+	sleep(2);
+}
 }
 

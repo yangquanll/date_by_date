@@ -312,7 +312,6 @@ int Recv :: recvdata()
 bool Recv :: start()
 {
 	int ret;
-	//udpnet.NetInit(INADDR_ANY, RECV_PORT);
 	ret = pthread_create(&recvThreadId,NULL,recvthread,(void *)this);
 	if(ret)
 	{
@@ -392,7 +391,7 @@ int Send::senddata()
 	socsend.sin_port = htons(dest_port);
 	while(1)
 	{
-		usleep(500*1000);
+		usleep(1000*1000);// 1s
 #if 0
 		sprintf(sendbuff," %s + %d",tmp,i++);
 		int buflen = sizeof(sendbuff);
