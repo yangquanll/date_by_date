@@ -265,12 +265,14 @@ int Recv :: recvdata()
 	int bufflen,recv_size;
 
 	char recvbuff[250];
-	bufflen = sizeof(recvbuff);
+	//bufflen = sizeof(recvbuff);
+	bufflen = sizeof(FILES);
 	sockaddr_in sockAddr;
 	sockAddr.sin_family = AF_INET;
 	//sockAddr.sin_addr.s_addr = SEND_IPADDR;  //注意网络序转换
 	//sockAddr.sin_port = htons(SEND_PORT);  //注意网络序转换
-	memset(recvbuff, 0, sizeof(recvbuff));
+	//memset(recvbuff, 0, sizeof(recvbuff));
+	memset(&rfl, 0, sizeof(FILES));
 	udpskt_recv = udpnet.NetInit(INADDR_ANY, SEND_PORT); //server client port same !
 	//udpskt_recv = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
 	printf("udpskt_recv = %d\n",udpskt_recv);
@@ -281,7 +283,7 @@ int Recv :: recvdata()
 	}
 	while(1)
 	{
-		recv_size = udpnet.NetRcv(udpskt_recv, sockAddr, recvbuff, bufflen, CYCLE_MS); //5000 ms
+		recv_size = udpnet.NetRcv(udpskt_recv, sockAddr, rfl, bufflen, CYCLE_MS); //5000 ms
 		if(recv_size == ERRSOCKET)
 		{
 			printf(" NetRcv  error \n");
@@ -291,7 +293,7 @@ int Recv :: recvdata()
 		}
 		//sleep(1);
 	}
-	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,recvbuff);
+//	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,);
 	return recv_size;
 
 }
