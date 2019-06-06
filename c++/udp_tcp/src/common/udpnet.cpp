@@ -124,8 +124,9 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 
 }
 
-int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, FILES rfl, int bufflen, double timeout)
+int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, FILES pfl, int bufflen, double timeout)
 {
+	printf("come to FILES NETrcv \n");
 	int rcv = 0;
 	socklen_t addrlen = sizeof(addr);
 	struct timeval	tWait;
@@ -163,9 +164,9 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, FILES rfl, int bufflen, dou
 	}
 	// rcv if = > 0 接收 当监视的相应的文件描述符集中满足条件时，比如说读文件描述符集中有数据到来时，内核(I/O)根据状态修改文件描述符集，并返回一个大于0 的数	
 #endif
-	rcv = recvfrom(udpskt, &rfl, bufflen, 0, (sockaddr *)(&addr), &addrlen);
-	printf("rfl.data_size = %ld rcvbuf = %s ,rcv = %d\n",rfl.data_size, rfl.name, rcv);
-	memset(&rfl,0,sizeof(FILES));
+	rcv = recvfrom(udpskt, &pfl, bufflen, 0, (sockaddr *)(&addr), &addrlen);
+	printf("fl.data_size = %ld rcvbuf = %s ,rcv = %d\n",pfl.data_size, pfl.name, rcv);
+	memset(&pfl,0,sizeof(FILES));
 	if(rcv == ERRSOCKET)
 	{
 		printf("rcv error \n");
