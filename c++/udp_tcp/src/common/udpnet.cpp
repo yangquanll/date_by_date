@@ -37,7 +37,6 @@ INADDR_ANY 允许任意ip 链接
 #include <error.h>
 #include <string.h>
 #include <stdlib.h>
-//#include "opfiles.h"
 #define ERRSOCKET -1
 #define ERRBIND -1
 #define ERRSELECT -1
@@ -49,7 +48,7 @@ Udp_Net ::Udp_Net(void)
 
 Udp_Net ::~Udp_Net(void)
 {
-	
+
 }
 
 int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
@@ -66,29 +65,46 @@ int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
 	local.sin_family = AF_INET;// ipv4
 	local.sin_addr.s_addr = htonl(ip); //网络转换接口
 	local.sin_port = htons(port);
-	
+
 	printf("NetInit() udpskt = %d\n",udpskt);
 	if(bind(udpskt,(struct sockaddr *) &local,sizeof(local)) == ERRSOCKET) //udp 没有 connect()
- 	{
+	{
 		printf("error bind()\n");
 		goto safe_exit;
 	}
 
 	struct linger opt;
 	memset(&opt, 0,sizeof(linger));
-// SO_LINGER 延迟关闭连接
-// SOL_SOCKET 通用套接字选项
+	// SO_LINGER 延迟关闭连接
+	// SOL_SOCKET 通用套接字选项
 
-if(setsockopt(udpskt,SOL_SOCKET,SO_LINGER,&opt,sizeof(struct linger)) == -1)
-{
-	printf("setsockt error \n");
-	goto safe_exit;
-}
+	if(setsockopt(udpskt,SOL_SOCKET,SO_LINGER,&opt,sizeof(struct linger)) == -1)
+	{
+		printf("setsockt error \n");
+		goto safe_exit;
+	}
 
 safe_exit:
 	return udpskt;
-	
-return udpskt;	
+
+	return udpskt;	
+}
+
+int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, FILES sfl, int bufflen)
+{
+	int sendlen = 0;
+	socklen_t addrlen = sizeof(remote_addr);
+	printf("sendto  fl.name = %s fl.data_size = %ld fl.data = %s,sizeof(FILES) = %d\n",sfl.name,sfl.data_size,sfl.data,sizeof(FILES));
+	sendlen = sendto(udpskt, &sfl, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);//send qian要 sleep()
+
+	if(sendlen == ERRSOCKET)
+	{
+		printf("sendto error \n");
+		return sendlen;
+	}
+
+	return sendlen;
+
 }
 
 int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int bufflen)
@@ -96,30 +112,83 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
 	int sendlen = 0;
 	socklen_t addrlen = sizeof(remote_addr);
 
-		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);//send qian要 sleep()
-	
-		if(sendlen == ERRSOCKET)
-		{
-			printf("sendto error \n");
-			return sendlen;
-		}
-	
+	sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);//send qian要 sleep()
+
+	if(sendlen == ERRSOCKET)
+	{
+		printf("sendto error \n");
 		return sendlen;
+	}
+
+	return sendlen;
 
 }
+
+int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, FILES rfl, int bufflen, double timeout)
+{
+	int rcv = 0;
+	socklen_t addrlen = sizeof(addr);
+	struct timeval	tWait;
+
+	int sec = timeout;
+	int usec = (int)(timeout * 1000 * 1000) % (1000 * 1000);
+
+	tWait.tv_sec = 5;
+	tWait.tv_usec = 0;
+
+
+	if (bufflen == 0)
+	{
+		printf("<NetRcv> -- receive buffer length = 0 \n");
+		goto safe_exit;
+	}	
+
+	printf("ip =%s port = %d\n",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
+#if 1 		
+	fd_set fd;
+	FD_ZERO(&fd);
+	FD_SET(udpskt, &fd);
+
+	rcv = select( udpskt + 1, &fd, NULL, NULL, &tWait); //&tWait  Blocking process unlock NULL 
+	printf("select rcv = %d\n",rcv);
+	if(rcv == ERRSELECT)
+	{
+		printf(" receive select error \n");
+		//	goto safe_exit;
+	}
+	else if(rcv == 0)
+	{
+		printf(" receive select timeout \n");
+		goto safe_exit;
+	}
+	// rcv if = > 0 接收 当监视的相应的文件描述符集中满足条件时，比如说读文件描述符集中有数据到来时，内核(I/O)根据状态修改文件描述符集，并返回一个大于0 的数	
+#endif
+	rcv = recvfrom(udpskt, &rfl, bufflen, 0, (sockaddr *)(&addr), &addrlen);
+	printf("rfl.data_size = %ld rcvbuf = %s ,rcv = %d\n",rfl.data_size, rfl.name, rcv);
+	memset(&rfl,0,sizeof(FILES));
+	if(rcv == ERRSOCKET)
+	{
+		printf("rcv error \n");
+		return rcv;
+	}
+
+safe_exit:
+	return rcv;
+}
+
 
 int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, double timeout)
 {
 	int rcv = 0;
 	socklen_t addrlen = sizeof(addr);
 	struct timeval	tWait;
-	
+
 	int sec = timeout;
 	int usec = (int)(timeout * 1000 * 1000) % (1000 * 1000);
-    
+
 	tWait.tv_sec = 5;
 	tWait.tv_usec = 0;
-	
+
 	if (rcvbuf == NULL)
 	{
 		printf("<NetRcv> -- receive buffer is null \n");
@@ -143,7 +212,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 	if(rcv == ERRSELECT)
 	{
 		printf(" receive select error \n");
-	//	goto safe_exit;
+		//	goto safe_exit;
 	}
 	else if(rcv == 0)
 	{
@@ -154,13 +223,13 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, 
 #endif
 	rcv = recvfrom(udpskt, rcvbuf, bufflen, 0, (sockaddr *)(&addr), &addrlen);
 	printf("recv_size = %d rcvbuf = %s \n",rcv,rcvbuf);
-	memset(rcvbuf,0,sizeof(rcvbuf));
+	memset(rcvbuf,0,sizeof(char));
 	if(rcv == ERRSOCKET)
 	{
 		printf("rcv error \n");
 		return rcv;
 	}
-	
+
 safe_exit:
 	return rcv;
 }
@@ -183,7 +252,7 @@ Recv :: Recv()
 	memset(&recvThreadId, 0, sizeof(pthread_t)); //后面是 类型
 	printf(" Recv()\n");
 	//memset(recvbuff, 0, sizeof(recvbuff));
-	
+
 }
 
 Recv :: ~Recv()
@@ -224,7 +293,7 @@ int Recv :: recvdata()
 	}
 	printf("recv_buflen = %d,recvbuff = %s \n",recv_size,recvbuff);
 	return recv_size;
-	
+
 }
 /*static*/ void* Recv :: recvthread(void* param)
 {	
@@ -260,17 +329,19 @@ bool Recv :: start()
 //==============================================================
 Send :: Send()
 {
+
+}
+
+Send :: Send(FILES fl)
+{
 	memset(&sendThreadId, 0, sizeof(pthread_t));
 	dest_ip = SEND_IPADDR;
 	dest_port = SEND_PORT;
 	memset(bufsed, 0, sizeof(bufsed));
+	memcpy(&sfl,&fl,sizeof(FILES));//get file content
 	//printf(" send dest_ip =%d,dest_port = %d\n",inet_addr("192.168.20.166"),dest_port); // 打印的类型要一致 要不然会出现段错误
 	send_size = 0;
-}
-
- Send :: Send(FILES fl)
-{
-
+	printf("fl.name = %s fl.data_size = %ld fl.data = %s,sizeof(FILES) = %d\n",fl.name,fl.data_size,fl.data,sizeof(FILES));
 }
 
 bool Send :: start(int _dest_ip, int _dest_port)
@@ -279,7 +350,7 @@ bool Send :: start(int _dest_ip, int _dest_port)
 	int ret = -1;
 	printf("dest_ip =%d,dest_port = %d\n",dest_ip,dest_port);
 	udpnet.NetInit(INADDR_ANY, dest_port);
-	
+
 	ret = pthread_create(&this->sendThreadId,NULL,sendthread,(void *)this);
 	if(ret)
 	{
@@ -318,26 +389,30 @@ int Send::senddata()
 	socsend.sin_port = htons(dest_port);
 	while(1)
 	{
+		usleep(500*1000);
+#if 0
 		sprintf(sendbuff," %s + %d",tmp,i++);
 		int buflen = sizeof(sendbuff);
 		printf(" sendbuff = %s  buflen = %d\n",sendbuff,buflen);
 		sendsize = udpnet.NetSend(udpnet.udpskt, socsend, sendbuff, buflen);
 		printf("sendsize = %d\n",sendsize);
-		sleep(1);
+#endif
+		int buflen = sizeof(FILES);
+		sendsize = udpnet.NetSend(udpnet.udpskt, socsend, sfl, buflen);
 	}
 	return sendsize;
 }
 
 /* static */void* Send :: sendthread(void* param) // 静态的函数 只能call 静态的变量或者函数
 {
-	
+
 	Send *send = (Send*)param;
 	if(send->senddata() == ERRSOCKET)
 	{
 		send->udpnet.NetClose();
 		send->udpnet.NetInit(INADDR_ANY, send->dest_port);
 	}
-	
+
 	sleep(1);
 }
 

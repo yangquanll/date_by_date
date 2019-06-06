@@ -22,8 +22,10 @@ public:
 	~Udp_Net();
 
 	int NetInit(unsigned int ip,unsigned short port);
+	int NetSend(int udpsocket, sockaddr_in remote, FILES sfl, int buflen); //
 	int NetSend(int udpsocket, sockaddr_in remote, char *sendbuf, int buflen); // udp sendto()
 	int NetRcv(int udpsocket, sockaddr_in &remote, char *rcvbuf, int buflen, double timeout);  // udp recvfrom()
+	int NetRcv(int udpsocket, sockaddr_in &remote, FILES rfl, int buflen, double timeout);  // udp recvfrom()
 	int udpskt;
 	void NetClose(void);
 	
@@ -38,6 +40,7 @@ public:
 	static void* recvthread(void* param);
 	pthread_t recvThreadId;
 	int udpskt_recv;
+	FILES rfl;
 	//char recvbuff[MAX_MSG_LEN];
 	bool start(void);
 	int recvdata(void);
@@ -53,6 +56,7 @@ public:
 	Udp_Net udpnet;
 	int udpskt;
 	char bufsed[MAX_MSG_LEN];
+	FILES sfl;
 //	static UINT32 SEND_IP;
 //	static UINT32 SEND_PORT;
 	static void* sendthread(void* param);
