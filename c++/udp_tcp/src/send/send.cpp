@@ -36,16 +36,17 @@ int main(int argc, char *argv[])
 	}
 	FILES ft = fo->get_file_op(argv[argc-1]);
 	memcpy(&files,&ft,sizeof(FILES));
-	
+	printf("sizeof(FILES) = %d\n",sizeof(FILES));
 	FILE *fp = fopen(argv[argc-1], "rb");
 	fread(files.data,sizeof(char),MAX_DATA_SIZE,fp);
 	printf("files.data = %ld\n",files.data,files.name);	
 	Send *sed = new Send(files);
 	//sed->start();
-while(1)
+/*
+	while(1)
 {
 	printf("startGetDevInfo() = %d\n",startGetDevInfo());
 	sleep(2);
-}
+}*/
 }
 

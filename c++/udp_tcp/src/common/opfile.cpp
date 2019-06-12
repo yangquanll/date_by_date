@@ -36,7 +36,6 @@ FILES FilesOperation :: get_file_op(char *name) //函数定义 要放到 FILES* 
 #endif    
 	//bzero(files.data, MAX_DATA_SIZE);
 	//files.data_size = fread(files.data,sizeof(char),MAX_DATA_SIZE,fp);
-	printf("file.data_size fread()= %ld\n",files.data_size);
     fclose(fp);
 	//SAFE_DELETE(files);
     return files;
