@@ -26,8 +26,6 @@ FILES FilesOperation :: get_file_op(char *name) //函数定义 要放到 FILES* 
         //exit(0);
     }
    
-
-    printf("file.data_size = %ld\n",files.data_size);
 #if 1
     fseek(fp, 0, SEEK_END); //把文件内部指针移动到文件尾部
     files.data_size  = ftell(fp); //返回指针偏离文件头的位置(即文件中字符个数)
