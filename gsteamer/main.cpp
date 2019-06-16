@@ -198,6 +198,7 @@ static gboolean refresh_position (CustomData *data)
         return TRUE;
 
     /* If we didn't know it yet, query the stream duration */
+ #if 0
     if (!GST_CLOCK_TIME_IS_VALID (data->duration))
     {
         if (!gst_element_query_duration (data->pipeline, fmt, &data->duration))
@@ -212,6 +213,7 @@ static gboolean refresh_position (CustomData *data)
             data->timeSlider->setRange(0,  durTime);
         }
     }
+ #endif
     if (gst_element_query_position (data->pipeline, fmt, &current))
     {
         /* Set the position of the slider to the current pipeline positoin, in SECONDS */

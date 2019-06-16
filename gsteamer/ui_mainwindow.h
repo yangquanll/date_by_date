@@ -43,6 +43,7 @@ public:
     QFrame *movieFrame;
     QPushButton *backButton;
     QPushButton *forwardButton;
+    QPushButton *pushButton;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -107,10 +108,13 @@ public:
         forwardButton = new QPushButton(centralWidget);
         forwardButton->setObjectName(QStringLiteral("forwardButton"));
         forwardButton->setGeometry(QRect(250, 450, 51, 27));
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+        pushButton->setGeometry(QRect(520, 430, 89, 25));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 689, 28));
+        menuBar->setGeometry(QRect(0, 0, 689, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -140,6 +144,7 @@ public:
         stopButton->setText(QApplication::translate("MainWindow", "Stop", nullptr));
         backButton->setText(QApplication::translate("MainWindow", "<<", nullptr));
         forwardButton->setText(QApplication::translate("MainWindow", ">>", nullptr));
+        pushButton->setText(QApplication::translate("MainWindow", "PushButton", nullptr));
     } // retranslateUi
 
 };

@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	block_len = fread(files.data,sizeof(char),MAX_DATA_SIZE,fp);
 	printf("[send] files.data = %ld,files.name = %s,block_len = %d\n",files.data,files.name,block_len);	
 	Send *sed = new Send(files);
-	//sed->start();
+	sed->start();
 /*
 	while(1)
 {
