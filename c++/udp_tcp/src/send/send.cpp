@@ -40,14 +40,18 @@ int main(int argc, char *argv[])
 	FILE *fp = fopen(argv[argc-1], "rb");
 	int block_len;
 	block_len = fread(files.data,sizeof(char),MAX_DATA_SIZE,fp);
-	printf("[send] files.data = %ld,files.name = %s,block_len = %d\n",files.data,files.name,block_len);	
+	printf("[send] files.data = %s ,files.name = %s,block_len = %d\n",files.data,files.name,block_len);	
 	Send *sed = new Send(files);
 	sed->start();
-/*
+	fclose(fp);
+	/*
 	while(1)
 {
 	printf("startGetDevInfo() = %d\n",startGetDevInfo());
 	sleep(2);
+
 }*/
+
 }
+
 

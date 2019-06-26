@@ -168,7 +168,7 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, FILES pfl, int bufflen, dou
 	memset(&pfl,0,sizeof(FILES));
 	rcv = recvfrom(udpskt, &pfl, bufflen, 0, (sockaddr *)(&addr), &addrlen);
 	printf("recv success rcv data_size = %d\n",rcv);
-	printf("fl.data_size = %ld, pfl.revc.name = %s ,rcv = %d\n",pfl.data_size, pfl.name, rcv);
+//	printf("fl.data_size = , pfl.revc.name = %s ,rcv = %d\n", pfl.name, rcv);
 
 	if(rcv == ERRSOCKET)
 	{
@@ -347,7 +347,7 @@ Send :: Send(FILES fl)
 	memcpy(&sfl,&fl,sizeof(FILES));//get file content
 	//printf(" send dest_ip =%d,dest_port = %d\n",inet_addr("192.168.20.166"),dest_port); // 打印的类型要一致 要不然会出现段错误
 	send_size = 0;
-	printf("fl.name = %s fl.data_size = %ld fl.data = %s,sizeof(FILES) = %d\n",fl.name,fl.data_size,fl.data,sizeof(FILES));
+	printf("[send -- >>]fl.name = %s fl.data_size = %ld fl.data = %s,sizeof(FILES) = %d\n",fl.name,fl.data_size,fl.data,sizeof(FILES));
 }
 
 bool Send :: start(int _dest_ip, int _dest_port)
