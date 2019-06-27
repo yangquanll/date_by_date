@@ -49,6 +49,8 @@ class Base
 		void foo(void); // inline 仅与函数声明放在一起 是没有效果的
 		void foo_au(){} // --->自动地成为内联函数
 		void stcp(const char *in,char *out);
+		string fun1();
+		void fun2(const string &str);
 		//void construct(const Base &b);
 		private:
 			int m_b_ma = 666;
@@ -95,6 +97,16 @@ Derived::Derived(int x,int y)
 	
 }
 
+string Base :: fun1()
+{
+	string str = "yyyyyyyyyyy";
+	return str;
+}
+
+void Base :: fun2(const string &st) //如果不加 const 编译器错误  临时对象 string c++中 临时对象都是const的
+{
+	cout<< "tst refer fun2() st = "<<st<<endl;
+}
 
 int main()
 {
@@ -105,5 +117,7 @@ int main()
 	Base b2 (b1);
 	
 	Derived *d = new Derived(88,99);
-	
+	cout<< " ########test refer########"<<endl;
+	b1.fun2(b1.fun1());
+
 }
