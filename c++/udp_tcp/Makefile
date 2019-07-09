@@ -1,5 +1,9 @@
 # set compiler 
+
+
+#GCC = arm-linux-gcc -pthread #编译 pthread
 GCC = gcc -pthread #编译 pthread
+#G++ = arm-linux-g++ -pthread 
 G++ = g++ -pthread 
 
 #set compiler switch
