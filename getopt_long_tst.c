@@ -15,6 +15,7 @@ static struct option long_options[] =
     { "perm", required_argument, 0, 'p' },
     {0, 0, 0, 0}
 };
+
 int main(int argc, const char* argv[])
 {
    int ret = 0;
