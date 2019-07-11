@@ -21,6 +21,7 @@ using namespace std;
 #define TST_UNIQUE_P 1
 #define TST_WEAK_P 1 //解决类引用 环回问题
 
+ #define TEEOS_LOGBUF_SIZE   (1U << 120)
 #define SAFE_FREE(p) if(NULL != p) {free(p); p = NULL; }
 #define SAFE_CHECK(p) if(NULL == p) { exit(1); } // 分配完内存后注意要检查 是否分配成功
 class Derived;
@@ -130,5 +131,10 @@ int main()
 	unique_ptr<Base> ub_t (new Base(88880));
 //	ub = ub_t; unique_ptr 没有重载 = 赋值 比auto_ptr 安全
 
+#endif
+	int t = 1U<< 120;
+	cout<< "tst 1U << 120  = "<< (int )TEEOS_LOGBUF_SIZE <<endl;
+#if TST_WEAK_P
+	
 #endif
 }
