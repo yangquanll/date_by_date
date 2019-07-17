@@ -18,6 +18,7 @@ class Single
 		static Single m_singt;
 		
 		//operator = 是为了 防止产生拷贝构造函数
+		// 如果直接 用Single:: Getinstance() 就可以省掉下面两句了
 		Single(const Single &);
 		Single& operator = (const Single &);
 		Single(){
@@ -27,7 +28,7 @@ class Single
 			cout << "destroy Single" <<endl;
 		}
 };
-// 使用饿汉式 先创建再使用
+// 使用饿汉式 先创建再使用 空间换时间
 Single Single::m_singt;
 // 用这个指针类型的防止内存泄漏
 Single *Single:: Getinstance()
