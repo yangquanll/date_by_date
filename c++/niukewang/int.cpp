@@ -1,3 +1,9 @@
+/****
+ * 输入第一个n 代表一共几个整数，并且最大是1000，
+ * 要求从小到大排序，并且去除重复的数
+ * 输出 排好序并且去重的数据
+****/
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -33,8 +39,8 @@ int main()
        // }
 		c++;
     }
-    sort(dt.begin(), dt.end());
-    dt.erase(unique(dt.begin(), dt.end()),dt.end());
+    sort(dt.begin(), dt.end());//从小到大排序 
+    dt.erase(unique(dt.begin(), dt.end()),dt.end());//unique() 找出重复的数据 用erase() 删除
     for(itd = dt.begin();itd != dt.end();++itd)
     {
 		OutputArray = *itd;
