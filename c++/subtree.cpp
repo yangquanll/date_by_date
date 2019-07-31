@@ -32,7 +32,9 @@ class Subtree
 		~Subtree(){
 
 		}
-		void creat(Tnptr* &btr);
+
+		string s;
+		void creat(Tnptr* &btr,string s);
 		//void destroy();
 		int getsize();
 		int getheight();
@@ -47,8 +49,9 @@ class Subtree
 		int sumnode(Tnptr* &btr);
 };
 
-void Subtree :: creat(Tnptr* &btr)
+void Subtree :: creat(Tnptr* &btr,string st)
 {
+	cout<<st<<endl;
 	ElemType va;
 	static int count = 0;
 	cin >> va;
@@ -59,19 +62,15 @@ void Subtree :: creat(Tnptr* &btr)
 	}else
 	{
 		btr =new Tnptr(count);// 可以在struct里面这样用
+		if(btr == NULL)
+			exit(1);
 		Subtree::size++; //只用 size++ 无效
 		btr->data = va;
-		creat(btr->lchild);
-		creat(btr->rchild);
+		creat(btr->lchild,"creat lchild");
+		creat(btr->rchild,"creat rchild");
 
 	}
-	count++;
-	if(count >5)
-	{
-			return;
-	}
-	cout<< "cnt = "<<count<<endl;
-	cout<<"size = "<<size<<endl;
+	//cout<<"size = "<<size<<endl;
 	Subtree::m_root =btr;
 	//memcpy(Subtree::m_root,btr,sizeof(btr)); //不能成功
 }
@@ -107,9 +106,10 @@ int Subtree ::getheight(Tnptr* &root)
 	if(root == NULL)
 		return 0;
 	int left_l =getheight(root->lchild);
+	
 	int right_l =getheight(root->rchild);
 
-	cout<<"left_l ="<<left_l<<"right_l = "<<right_l<<endl;
+//	cout<<"left_l ="<<left_l<<"right_l = "<<right_l<<endl;
 	return (left_l>right_l)? (left_l+1):(right_l+1);
 }
 
@@ -126,7 +126,7 @@ int Subtree::sumnode(Tnptr* &root)
 	}
 	else
 	{
-		return sumnode(root->lchild)+sumnode(root->rchild)+1;
+		return 1+sumnode(root->lchild)+sumnode(root->rchild);
 	}
 
 }
@@ -139,10 +139,10 @@ int Subtree::sumnode()
 int main()
 {
 	Subtree btree;
-	Tnptr *BR;
-	btree.creat(BR);
+	Tnptr *BR =NULL;
+	btree.creat(BR,"main caall");
 	cout<<"tree size ="<<btree.getsize()<<endl;
 	cout<<"tree height =" <<btree.getheight()<<endl;
-		cout<<"tree sumnode =" <<btree.sumnode()<<endl;
+	cout<<"tree sumnode =" <<btree.sumnode()<<endl;
 	return 0;
 }
