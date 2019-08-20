@@ -210,7 +210,7 @@ bool is_Balence(const int &bf)
 	return bf < 2;
 }
 
-bool is_AVLbinarytree(Tnptr* &btr,int &depth)
+bool Subtree :: is_AVLbinarytree(Tnptr* &btr,int &depth)
 {
 	if(btr == NULL)
 	{
@@ -222,6 +222,7 @@ bool is_AVLbinarytree(Tnptr* &btr,int &depth)
 	if(is_AVLbinarytree(btr->lchild,left) && is_AVLbinarytree(btr->rchild,right))
 	{
 		int bf =right - left;
+		cout<<"bf ="<<bf<<endl;
 		if(is_Balence(bf))
 		{
 			depth = (right >left? right : left)+1;
@@ -251,7 +252,11 @@ int main()
 	cout<<"lastorder:"<<endl;
 	btree.lastorder(BR);
 	cout<<endl;	
-	
+
+	cout<<"is_banlence_AVL_tree:"<<endl;
+	btree.is_banlence_AVL_tree(BR,0);
+
+	cout<<"search num:"<<endl;
 	btree.search('6',BR);
 	return 0;
 }
