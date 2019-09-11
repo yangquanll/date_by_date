@@ -6,8 +6,9 @@ int main()
 {
 	try{
 		int a;
-		char b;
-		cin>> a>>b;
+		char b[255];
+		float c;
+		cin>> a>>b>>c;
 		if(a == 8)
 		{
 			cout << " throw a = "<<a<<endl;
@@ -17,7 +18,10 @@ int main()
 			cout << " throw b ="<<b<<endl;
 			throw b;
 		}
-
+		if(c >2)
+		{
+			throw c;
+		}
 	}
 	    
 	    catch(int i){
@@ -25,6 +29,9 @@ int main()
 		}
 		catch(char *str){
 			cout<< "catch char str ="<< str <<endl;
+		}
+		catch(float r){
+			cout <<"catch float r ="<< r<<endl;
 		}
 		catch(...){
 			cout<< "catch unkown "<<endl;
