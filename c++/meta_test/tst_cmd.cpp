@@ -11,12 +11,14 @@
 //#include <erron.h>
 #include <sys/wait.h> 
 #include <getopt.h>
-
-#define DATA_CPY(dts,src,len) \
-	do{ \
+#include <string.h>
+#include <mcheck.h>
+/* 换行的话 需要 " \",后面需要加一个 空格*/
+#define COPY_DATA(dts,src,len) \
+	do { \
 		memcpy(dts,src,len); \
-		src += len; \
-	}while(0)
+		src+= len; \
+	} while(0);
 
 #define TST_POPEN 0
 #define TST_GETOPT 1
@@ -60,6 +62,36 @@ static void parse_args(int argc,char* argv[]){
 }
 }
 
+void tst_do(char *buf)
+{
+char const *p = buf;
+char *o =NULL;
+int o_len = 0;
+COPY_DATA(&o_len,p,sizeof(int));
+
+//mtrace();
+if(o_len+1 <0)
+{
+	cout<< "bad len"<<endl;
+}
+
+if((o = (char *)malloc(o_len+1) ) == NULL)
+{
+	cout << "malloc failed"<<endl;
+	free(o);
+}
+
+memset(o,0,sizeof(o));
+COPY_DATA(o,p,o_len);
+
+//setenv("MALLOC_TRACE", "taoge.log",1);
+
+cout<<o_len<<endl;
+cout<<"tst_do out = "<<o<<endl;
+
+}
+
+
 int main (int argc,char* argv[])
 {
 #if TST_POPEN
@@ -94,10 +126,10 @@ int main (int argc,char* argv[])
 #if TST_GETOPT 
 parse_args(argc,argv);
 
-}
 #endif
+char *buf = "kph -c generate -n 6";
+tst_do(buf);
 
-char *s = "yyyqq";
-char *o;
-DATA_CPY(o,s,sizeof(s));
-cout<<s<<endl;
+
+
+}

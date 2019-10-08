@@ -1,0 +1,5 @@
+09-12 17:24:51 045 - ===========start SEND heartbeat Send thread ===============
+09-12 17:24:51 045 - [DBG],[heartbeat],[ YL -HSender] _dest_ip =  16777343,  _dest_port  = 5500
+09-12 17:24:51 045 - [DBG],[heartbeat],[ YL -HSender] pthread_create sendThread ok.
+09-12 17:24:51 045 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+09-12 17:24:51 045 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =

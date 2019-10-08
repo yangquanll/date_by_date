@@ -52,7 +52,7 @@ class Subtree
 		
 		void destroy(Tnptr* &root);//销毁 tree
 		bool search(char key,Tnptr* &btr); ////______________ ____________tree
-		bool is_AVLbianytree(Tnptr* &btr,int &depth);
+		bool is_AVLbinarytree(Tnptr* &btr,int &depth);
 	
 
 	private:
@@ -221,6 +221,7 @@ bool Subtree :: is_AVLbinarytree(Tnptr* &btr,int &depth)
 	int left = 0;
 	if(is_AVLbinarytree(btr->lchild,left) && is_AVLbinarytree(btr->rchild,right))
 	{
+		cout<<"right"<<right<<"left"<<left<<endl;
 		int bf =right - left;
 		cout<<"bf ="<<bf<<endl;
 		if(is_Balence(bf))
@@ -254,7 +255,8 @@ int main()
 	cout<<endl;	
 
 	cout<<"is_banlence_AVL_tree:"<<endl;
-	btree.is_banlence_AVL_tree(BR,0);
+	int tr= 0;
+	btree.is_AVLbinarytree(BR,tr);
 
 	cout<<"search num:"<<endl;
 	btree.search('6',BR);

@@ -1,0 +1,76 @@
+04-18 11:43:49 271 - ===========start SEND heartbeat Send thread ===============
+04-18 11:43:49 271 - [DBG],[heartbeat],[ YL -HSender] _dest_ip =  16777343,  _dest_port  = 5500
+04-18 11:43:49 271 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:43:49 271 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:43:49 271 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:49 271 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:49 271 - [DBG],[heartbeat],[ YL -HSender] pthread_create sendThread ok.
+04-18 11:43:49 271 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:43:49 271 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:43:54 271 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:43:54 271 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:43:54 271 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:54 271 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:54 271 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:43:54 271 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:43:59 272 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:43:59 272 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:43:59 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:59 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:59 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:43:59 272 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:04 272 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:04 272 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:04 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:04 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:04 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:04 272 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:09 272 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:09 272 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:09 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:09 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:09 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:09 272 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:14 273 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:14 273 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:14 273 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:14 273 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:14 273 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:14 273 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:14 273 - [DBG],[heartbeat],HeartbeatSender statisic {
+04-18 11:44:14 273 - [DBG],[heartbeat],    BaseCycleMs: 5000; PrintCycle: 6; Ok: 0; Timeout: 0; Err: 6;
+04-18 11:44:14 273 - [DBG],[heartbeat],YL -- showContent  =     LastHeartBeat { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:14 273 - [DBG],[heartbeat],}
+04-18 11:44:45 625 - ===========start SEND heartbeat Send thread ===============
+04-18 11:44:45 626 - [DBG],[heartbeat],[ YL -HSender] _dest_ip =  16777343,  _dest_port  = 5500
+04-18 11:44:45 626 - [DBG],[heartbeat],[ YL -HSender] pthread_create sendThread ok.
+04-18 11:44:45 627 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:45 627 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:45 627 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:45 628 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:45 628 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:45 628 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:50 629 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:50 629 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:50 630 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:50 630 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:50 631 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:50 631 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:44:55 632 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:44:55 632 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:44:55 632 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:55 633 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:55 633 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:55 634 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:45:00 634 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:45:00 635 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:45:00 635 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:45:00 636 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:45:00 636 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:45:00 637 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.
+04-18 11:45:05 637 - [DBG],[heartbeat],YL -- showContent  = [Send] { "MAIN_WIN": 0; "CAM_SEARCH": 0; }
+04-18 11:45:05 638 - [DBG],[heartbeat], YL  -- dest_ip = 16777343 ,dest_port = 5500,sender->send_size =8 , sender->send_buff =
+04-18 11:45:05 639 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:45:05 639 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:45:05 639 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:45:05 639 - [DBG],[heartbeat],[ YL -- Send] ERROR at NetSend.

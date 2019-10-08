@@ -1,0 +1,33 @@
+04-18 11:43:49 271 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:49 271 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:49 271 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:43:54 271 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:54 271 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:54 271 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:43:59 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:43:59 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:43:59 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:04 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:04 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:04 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:09 272 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:09 272 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:09 272 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:14 273 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:14 273 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:14 273 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:45 627 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:45 628 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:45 628 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:50 630 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:50 630 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:50 631 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:44:55 632 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:44:55 633 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:44:55 633 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:45:00 635 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:45:00 636 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:45:00 636 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.
+04-18 11:45:05 639 - [ERR],[udpnet],<NetSend> -- Send connection error. errno:9, strerrorBad file descriptor
+04-18 11:45:05 639 - [ERR],[udpnet],<NetInit> -- bind() failed.
+04-18 11:45:05 639 - [ERR],[udpnet],<NetInit> -- setsockopt() failed.

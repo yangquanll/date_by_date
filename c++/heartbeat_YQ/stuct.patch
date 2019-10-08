@@ -1,0 +1,198 @@
+diff --git a/c++/heartbeat_YQ/bin/receive b/c++/heartbeat_YQ/bin/receive
+index 93e63ca..0b4727a 100755
+Binary files a/c++/heartbeat_YQ/bin/receive and b/c++/heartbeat_YQ/bin/receive differ
+diff --git a/c++/heartbeat_YQ/bin/send b/c++/heartbeat_YQ/bin/send
+index 7b6e935..3cd6645 100755
+Binary files a/c++/heartbeat_YQ/bin/send and b/c++/heartbeat_YQ/bin/send differ
+diff --git a/c++/heartbeat_YQ/include/heartbeat.h b/c++/heartbeat_YQ/include/heartbeat.h
+index e48a54c..4a59499 100644
+--- a/c++/heartbeat_YQ/include/heartbeat.h
++++ b/c++/heartbeat_YQ/include/heartbeat.h
+@@ -74,7 +74,7 @@ public:
+ 	static const char* counter_name[HEARTBEAT_COUNTER_NUM];
+ 
+ 	static Heartbeat heartbeat;
+-
++	static int YL;
+ public:
+ 	int counter[HEARTBEAT_COUNTER_NUM];
+ 
+diff --git a/c++/heartbeat_YQ/obj/heartbeat.o b/c++/heartbeat_YQ/obj/heartbeat.o
+index d981262..4c7409a 100644
+Binary files a/c++/heartbeat_YQ/obj/heartbeat.o and b/c++/heartbeat_YQ/obj/heartbeat.o differ
+diff --git a/c++/heartbeat_YQ/src/heartbeat.cpp b/c++/heartbeat_YQ/src/heartbeat.cpp
+index 47b3c12..c20d8b2 100644
+--- a/c++/heartbeat_YQ/src/heartbeat.cpp
++++ b/c++/heartbeat_YQ/src/heartbeat.cpp
+@@ -141,7 +141,7 @@ extern bool HeartbeatPkgUT_ON();
+ /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_SRC_PORT 	= 5400;
+ /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_IP 	= inet_addr("192.168.20.166");	//127.0.0.1
+ /* static */ UINT32 Heartbeat::DFT_HEARTBEAT_DST_PORT 	= 5500;
+-
++			int Heartbeat:: YL = 6666;
+ /* static */ const char* Heartbeat::counter_name[HEARTBEAT_COUNTER_NUM] = {
+ 	/* HEARTBEAT_MAIN_WIN */ 	"MAIN_WIN", 
+ 	/* HEARTBEAT_CAM_SEARCH */	"CAM_SEARCH", 
+@@ -243,14 +243,26 @@ HeartbeatSender::~HeartbeatSender()
+ 	stop();
+ }
+ 
++struct send_data
++{
++	int a =6677;
++	char *p = "yql";
++	long b = 888888;
++};
++
++send_data *sd;
++
+ bool HeartbeatSender::generateHeartbeatPkg()
+ {
+ 	heartbeat = Heartbeat::heartbeat; // class  heartbeat = heartbeat 
+ 
+ 	if (HeartbeatDbg_ON()) heartbeat.showContent("[Send]");
+-
++	  hbprintf(DEBUG_LOG, "s_a  =  %d,  _s_p  = %s", sd->a,sd->p);
+ 	memcpy(send_buff, &heartbeat, sizeof(Heartbeat)); // send_buff =  class Heartbeat
++	//char *send_buf = (char*)malloc(sizeof(sd));
++	//memcpy(send_buf, sd, sizeof(send_data)); // send_buff =  class Heartbeat
+ 	send_size = sizeof(Heartbeat);
++//	send_size = sizeof(send_data);
+ 
+ 	return true;
+ }
+@@ -451,6 +463,7 @@ bool HeartbeatMonitor::start()
+ 	while(1)
+ 	{    	
+ 	    ret = monitor->netAdp.NetRecv(monitor->recv_buff, monitor->recv_size, heartbeat_cycle_sec, &peer_ip, &peer_port);
++//		 hbprintf(DEBUG_LOG, DBG_HEAD "YL ------> recv_buff -> YL = %d",monitor->recv_buff.YL);
+         if (ret == false)
+         {
+             if (monitor->recv_size == 0)
+diff --git a/c++/memory_test/shared_ptr.cpp b/c++/memory_test/shared_ptr.cpp
+deleted file mode 100644
+index 0db85f5..0000000
+--- a/c++/memory_test/shared_ptr.cpp
++++ /dev/null
+@@ -1,108 +0,0 @@
+-/*
+-智能指针的使用 c++ 11
+-	- 没有free 或者 delete 指针 就是：内存泄露
+-为什么要用智能指针：
+-	- 更安全的使用 动态内存
+-	- 自动释放所指向的对象
+-	- 智能指针c++ 11 新标准库 提供(类似vector)三个模板： shared_ptr,unique_ptr,weak_ptr
+-*/
+-
+-#include <iostream>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <stdio.h>
+-#include <unistd.h>
+-#include <fstream>
+-#include <memory>
+-#include <string.h>
+-using namespace std;
+-
+-#define TST_SHARED_P 1
+-#define TST_UNIQUE_P 1
+-#define TST_WEAK_P 1 //解决类引用 环回问题
+-
+-#define SAFE_FREE(p) if(NULL != p) {free(p); p = NULL; }
+-#define SAFE_CHECK(p) if(NULL == p) { exit(1); } // 分配完内存后注意要检查 是否分配成功
+-class Base
+-{
+-	public:
+-		const int B;
+-		Base();
+-		Base(int x);
+-		Base(const Base &b);
+-		void foo(void); // inline 仅与函数声明放在一起 是没有效果的
+-		void foo_au(){} // --->自动地成为内联函数
+-		void stcp(const char *in,char **out);
+-		//void construct(const Base &b);
+-		Derived de;
+-	    ~Base(){cout<< " ~Base() " <<endl;}
+-		private:
+-			int m_b_ma = 666;
+-
+-};
+-
+-inline void foo() // 好的写法 ：类内定义 类外实现
+-{
+-	cout<<"Base : inline foo() "<<endl;
+-}
+-
+-Base::Base(int x)
+-	:B(x)
+-{
+-	cout<< "Base(int x) x = " <<B<<endl;
+-}
+-
+-void Base:: stcp(const char *in,char **out) //使用二级 指针是 能够传参成功 const的作用是 防止修改 *in
+-{
+-	char *t;
+-	*out = (char *)malloc(sizeof(in)); // 开辟内存后才能 cpy 最后要安全删除
+-	SAFE_CHECK(out); //检查 是否malloc 成功	
+-	memcpy(*out,in,sizeof(in));
+-	cout<< "stcp() out = "<< *out<<endl;
+-	//SAFE_FREE(out);
+-	//strcpy(in,"yq"); // 如果修改 const修饰的 入参 则会保错
+-}
+-
+-Base::Base(const Base &b)
+-	:B(22)
+-{
+-	cout<<"Base(const Base &b) m_b_ma = "<<b.m_b_ma<<endl;
+-}
+-
+-class Derived : public Base
+-{
+-	public:
+-		Derived(int x,int y);
+-		Base ba;
+-	private:
+-		int m_d;
+-		int m_b;
+-};
+-
+-Derived::Derived(int x,int y)
+-	:Base(x),m_d(x),m_b(y)			//在初始化表里调用基类的构造函数 1) && 也可以初始化 内部成员变量
+-{
+-	cout<<"init Derived m_d = "<< m_d <<endl;
+-	
+-}
+-
+-int main()
+-{
+-#if TST_SHARED_P
+-	cout<< "##### smart_pointer : tst_shared_ptr #####"<<endl;
+-	char *_in = "yyll52"; // char in[] = "yyll52"; 效果一样
+-	char *_out =NULL;
+-	shared_ptr<Base> sp(new Base(5656)); // 使用 智能指针 
+-	sp->stcp(_in,&_out);
+-	SAFE_CHECK(_out);
+-	cout<< " _out = "<<_out<<endl;
+-//#else
+-	//Base nb(5454); // 相比智能指针，这一句不会 自动析构
+-#endif
+-	
+-	shared_ptr<Base> ssp = make_shared<Derived>(8888888,9999); /// 传递给make_shared函数的参数必须和shared_ptr所指向类型的某个构造函数相匹配
+-	cout<< "use_count() = "<<ssp.use_count()<<endl;
+-	ssp = sp;
+-	cout<<"ssp.m_b_ma"<<ssp->B<<endl;
+-	
+-}
+\ No newline at end of file
+diff --git a/usb_tst/usb_tst.pro.user b/usb_tst/usb_tst.pro.user
+index e760d7b..e0d6726 100644
+--- a/usb_tst/usb_tst.pro.user
++++ b/usb_tst/usb_tst.pro.user
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE QtCreatorProject>
+-<!-- Written by QtCreator 4.6.1, 2019-04-25T19:38:38. -->
++<!-- Written by QtCreator 4.6.1, 2019-05-06T11:44:27. -->
+ <qtcreator>
+  <data>
+   <variable>EnvironmentId</variable>

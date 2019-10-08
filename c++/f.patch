@@ -1,0 +1,234 @@
+commit ca1a9fe91cb7585901a2b4daa08d049765428f6f
+Author: Yang Quan <yangquan@trustkernel.com>
+Date:   Fri May 31 19:19:13 2019 +0800
+
+    files
+
+diff --git a/c++/udp_tcp/1.patch b/c++/udp_tcp/1.patch
+deleted file mode 100644
+index fabc840..0000000
+--- a/c++/udp_tcp/1.patch
++++ /dev/null
+@@ -1,70 +0,0 @@
+-diff --git a/c++/udp_tcp/src/recv/recv.cpp b/c++/udp_tcp/src/recv/recv.cpp
+-index c655e24..2318e3c 100644
+---- a/c++/udp_tcp/src/recv/recv.cpp
+-+++ b/c++/udp_tcp/src/recv/recv.cpp
+-@@ -6,6 +6,7 @@
+- int main(int argc, char *argv[ ])
+- {
+- 	Recv *rcv = new Recv;
+-+	printf("come man()\n");
+- 	rcv->start();
+- 	//while()
+- }
+-diff --git a/c++/udp_tcp/src/udpnet.cpp b/c++/udp_tcp/src/udpnet.cpp
+-index 0aa10c9..9825aa0 100644
+---- a/c++/udp_tcp/src/udpnet.cpp
+-+++ b/c++/udp_tcp/src/udpnet.cpp
+-@@ -53,6 +53,7 @@ Udp_Net ::~Udp_Net(void)
+- 
+- int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
+- {
+-+	printf("NetInit start \n");
+- 	udpskt = socket(AF_INET,SOCK_DGRAM,0); // SOCK_DGRAM 指定 UDP 方式
+- 	if(udpskt == ERRSOCKET)
+- 	{
+-@@ -64,8 +65,8 @@ int Udp_Net :: NetInit(unsigned int ip, unsigned short port)
+- 	local.sin_family = AF_INET;// ipv4
+- 	local.sin_addr.s_addr = htonl(ip); //网络转换接口
+- 	local.sin_port = htons(port);
+--	//printf("intip = %d ,ip = %s\n",inet_addr("192.168.20.185"),inet_ntoa(local.sin_addr));
+--	printf("udpskt = %d\n",udpskt);
+-+	
+-+	printf("NetInit() udpskt = %d\n",udpskt);
+- 	if(bind(udpskt,(struct sockaddr *) &local,sizeof(local)) == ERRSOCKET) //udp 没有 connect()
+-  	{
+- 		printf("error bind()\n");
+-@@ -108,6 +109,7 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
+- 
+- int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen, double timeout)
+- {
+-+	printf("ip =%s port = %d",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
+- 	int rcv = 0;
+- 	socklen_t addrlen = sizeof(addr);
+- 	struct timeval	tWait;
+-@@ -129,7 +131,8 @@ int Udp_Net :: NetRcv(int udpskt, sockaddr_in &addr, char *rcvbuf, int bufflen,
+- 		printf("<NetRcv> -- receive buffer length = 0 \n");
+- 		goto safe_exit;
+- 	}	
+--	
+-+
+-+	printf("ip =%s port = %d",inet_ntoa(addr.sin_addr),ntohs(addr.sin_port));
+- #if 0		
+- 	fd_set fd;
+- 	FD_ZERO(&fd);
+-@@ -176,6 +179,7 @@ void Udp_Net :: NetClose()
+- Recv :: Recv()
+- {
+- 	memset(&recvThreadId, 0, sizeof(pthread_t)); //后面是 类型
+-+	printf(" Recv()\n");
+- 	//memset(recvbuff, 0, sizeof(recvbuff));
+- 	
+- }
+-@@ -210,7 +214,7 @@ int Recv :: recvdata()
+- 		printf("recv_size = %d recv_size = %s \n",recv_size,recv_size);
+- 		if(recv_size = ERRSOCKET)
+- 		{
+--			printf("NetRcv  error \n");
+-+			printf(" NetRcv  error \n");
+- 			udpnet.NetClose();
+- 			//re.udpnet.NetInit(INADDR_ANY, SEND_PORT);
+- 			exit(0);
+diff --git a/c++/udp_tcp/Makefile b/c++/udp_tcp/Makefile
+index 6b1650a..dba2685 100644
+--- a/c++/udp_tcp/Makefile
++++ b/c++/udp_tcp/Makefile
+@@ -7,7 +7,7 @@ CFLAG = -Wall -c # -Wall显示所有警告，-g 可调试，-c编译
+ 
+ #set source tree
+ INCLUDE = ./src/include
+-SRC_DIR = ./src
++SRC_DIR = ./src/common
+ SRC_SR = ./src/send
+ SRC_RR = ./src/recv
+ Allcpp = $(shell find -name *.cpp) # 使用Linux 命令要用 $(shell cmd) =  AllDirs + foreach
+diff --git a/c++/udp_tcp/bin/receive b/c++/udp_tcp/bin/receive
+index 9fb186a..615bfb3 100755
+Binary files a/c++/udp_tcp/bin/receive and b/c++/udp_tcp/bin/receive differ
+diff --git a/c++/udp_tcp/bin/send b/c++/udp_tcp/bin/send
+index 1ae12e6..d63be07 100755
+Binary files a/c++/udp_tcp/bin/send and b/c++/udp_tcp/bin/send differ
+diff --git a/c++/udp_tcp/obj/send.o b/c++/udp_tcp/obj/send.o
+index 8d942f6..c780403 100644
+Binary files a/c++/udp_tcp/obj/send.o and b/c++/udp_tcp/obj/send.o differ
+diff --git a/c++/udp_tcp/src/common/opfile.cpp b/c++/udp_tcp/src/common/opfile.cpp
+new file mode 100644
+index 0000000..9932589
+--- /dev/null
++++ b/c++/udp_tcp/src/common/opfile.cpp
+@@ -0,0 +1,37 @@
++#include <iostream>
++#include <opfiles.h>
++
++FILES* FilesOperation :: get_file_op(char *name) //函数定义 要放到 FILES*  而不要靠近函数名
++{
++	assert(name != NULL);
++	FILES *file = NULL;
++	char data[MAX_DATA_SIZE];
++
++    if(access(name, F_OK))//判断文件的权限
++    {
++        printf("####L(%d) file:%s not exist!", __LINE__, name);
++        //exit(0);
++    }
++    
++    file->name = name;
++	FILE *fp = fopen(name, "rb");
++    if(NULL == fp )
++    {
++        printf("file:%s can not open!\n", name);
++        //exit(0);
++    }
++   
++	file->data_size = fread(file->data,sizeof(char),MAX_DATA_SIZE,fp);
++    printf("file->data_size = %ld\n",file->data_size);
++
++    fseek(fp, 0, SEEK_END); //把文件内部指针移动到文件尾部
++    file->data_size  = ftell(fp); //返回指针偏离文件头的位置(即文件中字符个数)
++    fseek(fp, 0, SEEK_SET); //把文件内部指针移回到文件头部
++    
++    fclose(fp);
++    return file;
++}
++
++
++
++
+diff --git a/c++/udp_tcp/src/udpnet.cpp b/c++/udp_tcp/src/common/udpnet.cpp
+similarity index 99%
+rename from c++/udp_tcp/src/udpnet.cpp
+rename to c++/udp_tcp/src/common/udpnet.cpp
+index a9a2153..e8bc587 100644
+--- a/c++/udp_tcp/src/udpnet.cpp
++++ b/c++/udp_tcp/src/common/udpnet.cpp
+@@ -95,7 +95,7 @@ int Udp_Net :: NetSend(int udpskt, sockaddr_in remote_addr, char *sendbuf, int b
+ 	int sendlen = 0;
+ 	socklen_t addrlen = sizeof(remote_addr);
+ 
+-		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);
++		sendlen = sendto(udpskt, sendbuf, bufflen, 0, (sockaddr *)(&remote_addr), addrlen);//send qian要 sleep()
+ 	
+ 		if(sendlen == ERRSOCKET)
+ 		{
+diff --git a/c++/udp_tcp/src/include/opfiles.h b/c++/udp_tcp/src/include/opfiles.h
+new file mode 100644
+index 0000000..b2a0571
+--- /dev/null
++++ b/c++/udp_tcp/src/include/opfiles.h
+@@ -0,0 +1,27 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h> //close()
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/types.h>
++#include <netinet/in.h>
++#include <assert.h>
++#include <iostream>
++
++#define MAX_DATA_SIZE 1024
++
++typedef struct files
++{
++	char *name;
++	char data[MAX_DATA_SIZE];
++	int nalen;
++	long data_size;
++}FILES;
++
++class FilesOperation
++{
++public:
++	FilesOperation();
++	~FilesOperation();
++	FILES* get_file_op(char *name);
++};
+diff --git a/c++/udp_tcp/src/send/send.cpp b/c++/udp_tcp/src/send/send.cpp
+index b938bca..e3e3eeb 100644
+--- a/c++/udp_tcp/src/send/send.cpp
++++ b/c++/udp_tcp/src/send/send.cpp
+@@ -4,7 +4,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h> //sleep()
+-
++#include "opfiles.h"
+ 
+ #define SAFE_DELETE(p) {if((p) != NULL) delete [] (p); (p) = NULL;}
+ 
+@@ -16,15 +16,18 @@ typedef struct send_data
+ }SEND_DATA;
+ 
+ Udp_Net *gudpnet;
+-
+-int main(int argc, char *argv[ ])
++FilesOperation *fo;
++int main(int argc, char *argv[])
+ {
++	printf("argc = %d, *argv[] = %s\n",argc ,argv[argc-1]);
++	if(argv[argc-1] == NULL)
++	{
++		printf("please input file \n");
++		exit(0);
++	}
++	fo->get_file_op(argv[argc-1]);
+ 	Send *sed = new Send();
+ 	sed->start();
+-//	while(1)
+-//	{
+-//		sleep(2);
+-//	}
+ 
+ }
+ 
