@@ -8,12 +8,20 @@ using namespace std;
 #define VERIFY_TEE_KEY   "kph -c verify_key -n 0"
 #define VERIFY_CONFIG    "kph -c verify_config"
 #define GENERATE_TEE_KEY "kph -c generate -n 0"
+typedef enum eid
+{
+	KPH_VERIFY_KEYBOX = 0,
+	KPH_VERIFY_TEE_KEY,
+	KPH_VERIFY_CONFIG,
+	KPH_GENERATE_TEE_KEY,
+}ID_GATHER;
 
+/*
 #define KPH_VERIFY_KEYBOX    0
 #define KPH_VERIFY_TEE_KEY   1
 #define KPH_VERIFY_CONFIG   2
 #define KPH_GENERATE_TEE_KEY 3
-
+*/
 
 
 int kph_verify_ta_data(uint32_t taid)
@@ -37,7 +45,7 @@ int kph_generate_key_legacy(uint32_t ta_id)
 	return KPH_GENERATE_TEE_KEY;
 }
 
-int invoke_kph_api (int cs)
+int invoke_kph_api (ID_GATHER cs)
 {
 	int ret = 0;
 	switch(cs)
@@ -79,6 +87,7 @@ int main (int argc,char *argv[])
 
 		pm = argv[1];
 		cout<<"pm = "<<pm<<endl;
+
 		itr = kph_cmd.find(pm);
 		if(itr == kph_cmd.end())
 		{
@@ -86,8 +95,11 @@ int main (int argc,char *argv[])
 		}
 
 		id =itr -> second;
+		ID_GATHER euid = (ID_GATHER)id;
+		cout << "enum id = "<<euid<<endl;
 		cout<<"find ID = "<<id<<endl;
+	    invoke_kph_api(euid);
+
 	}
     
-	invoke_kph_api(id);
-}
+	}
