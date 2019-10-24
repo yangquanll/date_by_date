@@ -4,6 +4,18 @@
 
 using namespace std;
 
+char* tst(int &a)
+{
+	for(int i =0;i <=88; i++)
+	{
+		if(i == 88)
+			{
+				a =i;
+			}
+	}
+	char *str = NULL;
+	return str;
+}
 int main()
 {
 	char *file_name1 = "/sdcard/tee/.";
@@ -28,9 +40,9 @@ int main()
 		cout<<"not find2 "<<endl;
 	}
 
-
-
-
+	int s =0;
+	tst(s);
+	cout<<"s ="<<s<<endl;
 
 	cout<< "strstr = "<<strstr(file_name2,obj)<<endl;
 }

@@ -242,7 +242,7 @@ bool Subtree :: is_AVLbinarytree(Tnptr* &btr,int &depth)
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	Subtree btree;
 	Tnptr *BR =NULL;
@@ -263,9 +263,14 @@ int main()
 	cout<<"step : is_banlence_AVL_tree:"<<endl;
 	int tr= 0;
 	btree.is_AVLbinarytree(BR,tr);
+	if(argc < 2)
+	{
+		cout<<"please input need search num"<<endl;
+	}
 
-	cout<<"search num:"<<endl;
-	//btree.search('6',BR);
+	cout<<"search num:"<<argv<<endl;
+	char input = (char) argv;
+	btree.search(input,BR);
 	return 0;
 }
 

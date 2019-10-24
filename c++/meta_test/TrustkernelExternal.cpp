@@ -32,16 +32,14 @@
 #define MIDDL_VERSION   2
 #define MINOR_VERSION   0
 
-/* shell cmd */
-#define VERIFY_KEYBOX    "kph -c verify_data -n 6 -g keybox"
-#define VERIFY_TEE_KEY   "kph -c verify_key -n 0"
-#define VERIFY_CONFIG    "kph -c verify_config"
-#define GENERATE_TEE_KEY "kph -c generate -n 0"
-
-#define KPH_VERIFY_KEYBOX    0
-#define KPH_VERIFY_TEE_KEY   1
-#define KPH_VERIFY_CONFIG   2
-#define KPH_GENERATE_TEE_KEY 3
+typedef enum candid
+{
+	KPH_GENERATE = 0,
+	KPH_VERIFY_CONFIG,
+	KPH_VERIFY_KEY,
+	KPH_VERIFY_DATA,
+	KPH_UPDATE_PSTATE,
+}ID_CANDID;
 
 using std::string;
 using std::unordered_map;
@@ -167,16 +165,24 @@ static bool insert_id_buf(string id, file_buffer buf)
     return true;
 }
 
-const char *log_tag ="YQ_TST";
 static int handle_kph_verify_ta_data(const int ta_id)
 {
     int ret = 0;
     kpha_log("enter");
-
-    if ((ret = kph_verify_ta_data2(ta_id,"keybox"))) {
-        kpha_err("YQ-- verify_ta_data failed");
-    }
-
+	if(ta_id)
+	{
+		if ((ret = kph_verify_ta_data2(ta_id,"keybox")))
+		{
+			kpha_err("verify google keybox failed");
+		}
+	
+	}else
+	{
+		if ((ret = kph_verify_ta_data(ta_id)))
+		{
+			kpha_err("verify tee key failed");
+		}
+	}
     return ret;
 }
 
@@ -186,7 +192,7 @@ static int handle_kph_verify_ta_key(const int ta_id)
     kpha_log("enter");
 
     if ((ret = kph_verify_ta_key(ta_id))) {
-        kpha_err("YQ-- verify_ta_key failed");
+        kpha_err("verify_ta_key failed");
     }
 
     return ret;
@@ -198,7 +204,7 @@ static int handle_kph_verify_device_config(void)
     kpha_log("enter");
 
     if ((ret = kph_verify_device_config())) {
-        kpha_err("YQ-- verify_device_config failed");
+        kpha_err("verify_device_config failed");
     }
 
     return ret;
@@ -210,72 +216,77 @@ static int handle_kph_generate_key_legacy(const int ta_id)
     kpha_log("enter");
 
     if ((ret = kph_generate_key_legacy(ta_id))) {
-        kpha_err("YQ-- generate_key_legacy failed");
+        kpha_err("generate_key_legacy failed");
     }
 
     return ret;
 }
 
-static int invoke_kpha_api (const int id)
+static int invoke_kpha_api (const ID_CANDID id, int num)
 {
 	int ret = 0;
 	switch(id)
 	{
-		case KPH_VERIFY_KEYBOX: 
-			ret = handle_kph_verify_ta_data(6);
-		break;
-		case KPH_VERIFY_TEE_KEY:
-			ret = handle_kph_verify_ta_key(0);
-		break;
-		case KPH_VERIFY_CONFIG:
-			ret = handle_kph_verify_device_config();
-		break;
-		case KPH_GENERATE_TEE_KEY:
-			ret = handle_kph_generate_key_legacy(0);
-		break;
-		default:
-        kpha_err("Unkown id = %d",id);
-	}
+            case KPH_GENERATE:
+                ret = handle_kph_generate_key_legacy(num);
+                break;
+            case KPH_VERIFY_CONFIG:
+                ret = handle_kph_verify_device_config();
+                break;
 
-	return ret;
+            case KPH_VERIFY_KEY:
+                ret = handle_kph_verify_ta_key(num);
+                break;
+
+            case KPH_VERIFY_DATA:
+                ret = handle_kph_verify_ta_data(num);
+                break;
+
+            default:
+                kpha_err("Unkown id = %d",id);
+        }
+
+        return ret;
 }
 
-static int find_kph_cmd(const char *p)
+
+static char *parser_cmd_buf( const char *cmdbuf, int &typ, int &num)
 {
-    int id;
-    unordered_map <string ,int> kph_cmd;
+	uint32_t i,x;
+        char *out_cmd_head = NULL;
+	const char *candidate_cmd_head[] = { "generate", "verify_config", "verify_key", "verify_data", "update_pstate" };// 5                                                                                                                                 
+	const char *candidate_num_head[] = {"6", "0"};
 
-	kph_cmd.insert(unordered_map<string, int> ::value_type(VERIFY_KEYBOX, 0));
-	kph_cmd.insert(unordered_map<string, int> ::value_type(VERIFY_TEE_KEY, 1));
-	kph_cmd.insert(unordered_map<string, int> ::value_type(VERIFY_CONFIG, 2));
-	kph_cmd.insert(unordered_map<string, int> ::value_type(GENERATE_TEE_KEY, 3));
-
-	unordered_map <string ,int>::iterator itr;
-
-    if (p == NULL) {
-        kpha_err("NULL cmd buf");
-        return KPHA_ERR_BAD_PARAMETERS;
+        kpha_log("input buf = %s",cmdbuf);
+	for (i = 0; i < sizeof(candidate_cmd_head) / sizeof(candidate_cmd_head[0]); i++) {
+		if (strstr(cmdbuf, candidate_cmd_head[i]) != NULL)
+		{
+			typ = i;
+			out_cmd_head = (char *)candidate_cmd_head[i];
+			for(x = 0; x< sizeof(candidate_num_head) / sizeof(candidate_num_head[0]); x++)
+			{
+				if(strstr(cmdbuf,candidate_num_head[x]) != NULL)
+				{
+					num = atoi(candidate_num_head[x]);
+				}else
+				{
+					kpha_err("num not available");	
+				}
+			}
+                        return out_cmd_head;
+		}
     }
-    
-	itr = kph_cmd.find(p);
-    
-	if(itr == kph_cmd.end()){
-       kpha_err("Cmd is not in the map");
-	}
-    
-	id =itr -> second;
-    kpha_log("Find ID = %d\n",id);
-    
-    return id;
+
+    return NULL;
+   kpha_err("cmd not int candidate");
 }
 
-#if 1
+
 /* raw means pass the raw output buffer back to client */
 static int __runcmd(const char *p, char *meta_resp, size_t meta_resp_size, int *r, bool raw)
 {
     FILE *fp;
-
-    int size,id,kr;
+    int size,ret,id,num = -1;
     char linebuf[LOG_BUF_MAX_LENGTH];
 
     std::string resp;
@@ -306,41 +317,37 @@ static int __runcmd(const char *p, char *meta_resp, size_t meta_resp_size, int *
             sizeof(meta_buf_header_t));
         return KPHA_ERR_SHORT_BUFFER;
     }
-#if 1
-	if ((fp = popen(p, "r")) == NULL) {
-        kpha_err("popen(%s) failed with %s(%d)", p, strerror(errno), errno);
-        return KPHA_ERR_POSIX(errno);
+
+ #if 1 
+
+    char *obj =NULL;
+    obj = parser_cmd_buf(p,id,num);
+    if(obj !=NULL)
+        kpha_log("parser obj char = %s",obj);
+
+    ID_CANDID ucandid = (ID_CANDID)id;
+
+    ret = invoke_kpha_api(ucandid,num);
+
+    if(ret == -65528 || ret == -267386879){
+        *r = 8;
+    }else if(ret == -65533 || ret == 0){
+        *r = 0;
     }
 
-    while (fgets(linebuf, LOG_BUF_MAX_LENGTH, fp)) {
-        resp += linebuf;
-    }
-   *r = pclose(fp);
-
-    if (*r == -1) {
-        kpha_err("pclose(%s) failed with %s(%d)", p, strerror(errno), errno);
-        return KPHA_ERR_POSIX(errno);
-    }
-#endif
-
-	kpha_log("YQ -- resp = %s",resp.c_str());
-	kpha_log("YQ -- kph_cmd = %s",p);
-
- #if 0 
-        id = find_kph_cmd(p);
-        kr = invoke_kpha_api(id);
-		kpha_log("YQ-- find id = %d,invoke_kpha_api = %d\n",id,kr);
+    kpha_log("YQ-- find id = %d,num =%d,invoke_kpha_api = %d *r = %d \n",ucandid,num,ret,*r);
 #endif 
 
     if (raw || *r != 0) {
         uint64_t buf_ptr = 0ULL;
-        uint32_t buf_size = static_cast<uint32_t>(sizeof(resp.length() + 1));
+      	uint32_t buf_size = static_cast<uint32_t>(sizeof(ret));
+        //int32_t buf_size = static_cast<uint32_t>(sizeof(resp.length() + 1));
         meta_buf_header_t *mbh = reinterpret_cast<meta_buf_header_t *>(meta_resp);
-
+#if 0
         if (*r)
             *r = WEXITSTATUS(*r);
-
-        kpha_log("pclose(%s) exited with %d", p, *r);
+#endif
+        kpha_log("kph_cmd=(%s) api ret = %d", p, *r);
 
         if ((s_resp = strdup(resp.c_str())) == NULL) {
             kpha_err("dup string length=%zu failed", resp.length());
@@ -360,15 +367,12 @@ static int __runcmd(const char *p, char *meta_resp, size_t meta_resp_size, int *
 
         mbh->bufsize = buf_size;
         mbh->bufptr = buf_ptr;
-		kpha_log("YQ -- mbh->bufsize  =%d ,mbh->bufptr = %d,mbh->ret = %d",mbh->bufsize ,mbh->bufptr,mbh->ret);
     }
 
 err:
     return 0;
 }
-#endif
 
-#if 1
 static int runcmd(const char *p, char *meta_resp, size_t meta_resp_size, bool raw = false)
 {
     int cmd_r, r;
@@ -388,11 +392,9 @@ static int runcmd(const char *p, char *meta_resp, size_t meta_resp_size, bool ra
     if (!raw)
         return cmd_r == 0 ? 0 : KPHA_ERR_EXEC(cmd_r);
 
-	kpha_log("exe_resp = %d",cmd_r);
     ((meta_buf_header_t *) meta_resp)->ret = cmd_r;
     return 0;
 }
-#endif
 
 static void dropcmdresp(uint64_t bufptr)
 {
@@ -425,7 +427,6 @@ static int __readcmdresp(char *buf, uint64_t bufptr, uint32_t *size)
 
     memcpy(buf, p, resp_size);
     *size = resp_size;
-	kpha_log("buf = %s,resp_size =%d",buf,resp_size);
 
     cmd_resps.erase(it);
     free(p);
@@ -895,7 +896,7 @@ static int parse_buf_and_generate_key(char *buf, int buf_size)
     int number = -1;
     int number_len = 0;
     int ret = 0;
-    //const char *comm_prefix = "kph -c generate -n";
+    const char *comm_prefix = "kph -c generate -n";
     char comm[128] = { 0 };
 
     char *p = buf;
@@ -918,14 +919,8 @@ static int parse_buf_and_generate_key(char *buf, int buf_size)
     COPY_DATA(&number, p, number_len);
 
     /*FIXME check rv of sprintf */
-    ret = kph_generate_key_legacy((uint32_t)number);
-	
-    //sprintf(comm, "%s %d", comm_prefix, number);
-    //return runcmd(comm, buf, buf_size);
-    kpha_log("kph_generate return = %d, number = %d",ret,number);
-    return ret;
-	
-   //return kph_generate_key_legacy((uint32_t)number);
+    sprintf(comm, "%s %d", comm_prefix, number);
+    return runcmd(comm, buf, buf_size);
 }
 
 static int parse_buf_and_import_ta_key(char *buf, int buf_size)
@@ -1361,7 +1356,6 @@ static int get_sn_chipid(char *out_buf, int *out_buf_len)
     return 0;
 }
 
-#if 0
 static int check_device_init_status(char *in_buf, int *in_buf_size)
 {
     pid_t status = 0;
@@ -1397,8 +1391,6 @@ static int check_device_init_status(char *in_buf, int *in_buf_size)
     kpha_log("succeeds");
     return 0;
 }
-
-#endif
 
 static int get_version(char *inbuf, int *len)
 {
@@ -1619,7 +1611,6 @@ static int get_prop(const char *propname, char *respbuf, size_t len)
         return KPHA_ERR_POSIX(r);
     }
 
-	kpha_log("get_prop linebuf =%s,s_resp = %s",linebuf,strdup(linebuf));
     if ((s_resp = strdup(linebuf)) == NULL) {
         kpha_err("dup string length=%zu failed", r);
     } else {
@@ -1640,7 +1631,7 @@ static int get_prop(const char *propname, char *respbuf, size_t len)
 
 static int generic_execute(char *inbuf, int *len)
 {
-    int r,id;
+    int r;
     char *p;
 
     if (*len <= 1) {
@@ -1666,20 +1657,11 @@ static int generic_execute(char *inbuf, int *len)
             kpha_err("Empty propname");
             return KPHA_ERR_BAD_PARAMETERS;
         }
-       
-//		kpha_log("YQ_TST-- KPH_CHECK_API = %d",kph_verify_ta_data2(6,"keybox"));
-//		kpha_log("YQ_TST-- KPH_CHECK_API_ALL = %d",kph_verify_tee_all());
 
-        kpha_log("YQ-- get_prop propname = %s  respbuf = %s \n",p,inbuf);
         r = get_prop(p, inbuf, *len);
-		kpha_log("YQ -- get_prop p = %s",p);
     } else {
-      
-		kpha_log("YQ-- kph_shell_cmd  = %s\n",inbuf);
-	  	r = runcmd(inbuf, inbuf, *len, true);
-	}
-
-		kpha_log("YQ-- r_runcmd  = %d\n",r);
+        r = runcmd(inbuf, inbuf, *len, true);
+    }
 
     if (r)
         return r;
@@ -1833,8 +1815,7 @@ int handle_trustkernel_meta_command(unsigned char cmd, char **pbuf,int *psize, u
                 }
 
                 ret = readcmdresp(buf, &size, &respbuf);
-				
-				kpha_log("YQ-- READ_CMDRSP buf = %s , respbuf = %s",buf,respbuf);
+
                 if (ret) {
                     *psize = sizeof(meta_buf_header_t);
                     *r = KPHA_META_RESULT_FAILED;
