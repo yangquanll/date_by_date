@@ -93,6 +93,7 @@ SeqList* Seq_list :: get(SeqList *list,int pos)
 int main ()
 {
 	sqlist *ulist;
+	ulist->length =10;
 
 	
 
