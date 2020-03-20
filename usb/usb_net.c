@@ -48,8 +48,12 @@ int main(int argc, char* argv[]) {
 
 	while(1) {         
 		/* Netlink message buffer */         
+		
 		char buf[UEVENT_BUFFER_SIZE * 2] = {0};         
-		recv(hotplug_sock, &buf, sizeof(buf), 0); printf("%s\n", buf);         
+		recv(hotplug_sock, &buf, sizeof(buf), 0); 
+		
+		printf("%s\n", buf);         
+		
 		/* USB 设备的插拔会出现字符信息，通过比较不同的信息确定特定设备的插拔，在这添加比较代码 */     
 	}
 
