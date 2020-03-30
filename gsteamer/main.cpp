@@ -135,8 +135,18 @@ int main(int argc, char *argv[]){
     g_signal_connect (data.demuxer, "pad-added", G_CALLBACK (on_pad_added),  &data);
     g_timeout_add_seconds (1, (GSourceFunc)refresh_position, &data);
 
-    /* Set the source to play */
-    g_object_set (G_OBJECT (data.source), "location", "./yq.webm", NULL);
+	char video_file[10];
+	if (argv[1] != NULL)
+	{
+		strcpy(video_file,argv[1]);
+		g_printerr ("video_file = %s\n",video_file);
+	}else{
+		g_printerr ("ERROR information: please input video_file");
+ 		return -1;
+	}
+    
+	/* Set the source to play */
+    g_object_set (G_OBJECT (data.source), "location", video_file, NULL);
 
     printf(" yq	 --> set path \n");
     /* Start playing */
@@ -145,7 +155,7 @@ int main(int argc, char *argv[]){
     {
         gst_element_set_state (data.pipeline, GST_STATE_NULL);
         gst_object_unref (data.pipeline);
-         g_printerr ("ERROR information: gst_element_set_state %sd\n",ret);
+        g_printerr ("ERROR information: gst_element_set_state %d\n",ret);
         return -1;
     }
     return app.exec();
