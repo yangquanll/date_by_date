@@ -13,4 +13,7 @@ sudo ln -s /usr/include/libxml2/libxml   /usr/include/libxml
 sudo apt-get install glib-2.0
 
 5.gsteamer 安装目录	（可能 gsteamer-1.0 重命名）
-/usr/include/gstreamer-1.0/
+/usr/include/gstreamer-1.0/gst/ 
+
+6. dowload video file for test
+https://gstreamer.freedesktop.org/media/gst-integration-testsuite/extras-ges/The_Sausage_Being_Made/Videos/projects/test-sausage/
