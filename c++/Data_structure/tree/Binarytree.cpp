@@ -269,7 +269,7 @@ int main(int argc, char *argv[])
 	}
 
 	cout<<"search num:"<<argv<<endl;
-	char input = (char) argv;
+	char *input = argv[1];
 	btree.search(input,BR);
 	return 0;
 }

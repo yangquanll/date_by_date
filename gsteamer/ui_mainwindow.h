@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.11.0
+** Created by: Qt User Interface Compiler version 5.12.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -51,76 +51,76 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
+            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(689, 547);
         centralWidget = new QWidget(MainWindow);
-        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         label = new QLabel(centralWidget);
-        label->setObjectName(QStringLiteral("label"));
+        label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(180, 120, 301, 171));
         timeSlider = new QSlider(centralWidget);
-        timeSlider->setObjectName(QStringLiteral("timeSlider"));
+        timeSlider->setObjectName(QString::fromUtf8("timeSlider"));
         timeSlider->setGeometry(QRect(50, 373, 160, 29));
         timeSlider->setOrientation(Qt::Horizontal);
         volumeSlider = new QSlider(centralWidget);
-        volumeSlider->setObjectName(QStringLiteral("volumeSlider"));
+        volumeSlider->setObjectName(QString::fromUtf8("volumeSlider"));
         volumeSlider->setGeometry(QRect(450, 373, 160, 29));
         volumeSlider->setValue(30);
         volumeSlider->setOrientation(Qt::Horizontal);
         label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setGeometry(QRect(10, 373, 41, 31));
         label_3 = new QLabel(centralWidget);
-        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setGeometry(QRect(390, 373, 51, 31));
         curTimelabel = new QLabel(centralWidget);
-        curTimelabel->setObjectName(QStringLiteral("curTimelabel"));
+        curTimelabel->setObjectName(QString::fromUtf8("curTimelabel"));
         curTimelabel->setGeometry(QRect(210, 370, 61, 31));
         label_4 = new QLabel(centralWidget);
-        label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setGeometry(QRect(250, 370, 20, 31));
         durTimelabel = new QLabel(centralWidget);
-        durTimelabel->setObjectName(QStringLiteral("durTimelabel"));
+        durTimelabel->setObjectName(QString::fromUtf8("durTimelabel"));
         durTimelabel->setGeometry(QRect(260, 370, 67, 31));
         volumelabel = new QLabel(centralWidget);
-        volumelabel->setObjectName(QStringLiteral("volumelabel"));
+        volumelabel->setObjectName(QString::fromUtf8("volumelabel"));
         volumelabel->setGeometry(QRect(610, 370, 31, 31));
         label_6 = new QLabel(centralWidget);
-        label_6->setObjectName(QStringLiteral("label_6"));
+        label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(650, 370, 41, 31));
         playButton = new QPushButton(centralWidget);
-        playButton->setObjectName(QStringLiteral("playButton"));
+        playButton->setObjectName(QString::fromUtf8("playButton"));
         playButton->setGeometry(QRect(60, 420, 51, 27));
         pauseButton = new QPushButton(centralWidget);
-        pauseButton->setObjectName(QStringLiteral("pauseButton"));
+        pauseButton->setObjectName(QString::fromUtf8("pauseButton"));
         pauseButton->setGeometry(QRect(190, 420, 51, 27));
         stopButton = new QPushButton(centralWidget);
-        stopButton->setObjectName(QStringLiteral("stopButton"));
+        stopButton->setObjectName(QString::fromUtf8("stopButton"));
         stopButton->setGeometry(QRect(310, 420, 51, 27));
         movieFrame = new QFrame(centralWidget);
-        movieFrame->setObjectName(QStringLiteral("movieFrame"));
+        movieFrame->setObjectName(QString::fromUtf8("movieFrame"));
         movieFrame->setGeometry(QRect(39, 19, 601, 341));
         movieFrame->setFrameShape(QFrame::StyledPanel);
         movieFrame->setFrameShadow(QFrame::Raised);
         backButton = new QPushButton(centralWidget);
-        backButton->setObjectName(QStringLiteral("backButton"));
+        backButton->setObjectName(QString::fromUtf8("backButton"));
         backButton->setGeometry(QRect(120, 450, 51, 27));
         forwardButton = new QPushButton(centralWidget);
-        forwardButton->setObjectName(QStringLiteral("forwardButton"));
+        forwardButton->setObjectName(QString::fromUtf8("forwardButton"));
         forwardButton->setGeometry(QRect(250, 450, 51, 27));
         pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setGeometry(QRect(520, 430, 89, 25));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 689, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
         MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
         statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
