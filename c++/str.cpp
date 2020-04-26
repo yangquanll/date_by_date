@@ -69,6 +69,39 @@ class soc :public device
 };
 
 
+typedef struct CWFaceParam_t
+{
+    int roi_x, roi_y, roi_width, roi_height;    // 检测ROI, roi_x，roi_y为左上角坐标，roi_width为roi宽度，roi_height为roi高度，默认整帧图像
+    int min_face_size, max_face_size;           // 人脸尺寸范围，默认[100,400],最大可设置范围[30,1500]，最大人脸尺寸不要超过ROI的roi_width和roi_height
+    int max_face_num_perImg;                    // 单帧图像中最大可检测人脸数
+    int perform_level;                          // 检测性能水平，范围(1~6).数字越大速度越慢，但效果（质量分和活体）越好,反之亦然.默认值5压缩至最大边长640
+	int nir_face_compare;                       // 是否进行可见光和红外光人脸比对，目前仅红外活体使用，1:开启，0:关闭
+    int open_quality;                           // 是否进行质量检测,1:开启，0:关闭，默认为true，设置为flase时以下float参数强制设置为-1不开启
+    int open_liveness;                          // 是否进行活体,1:开启，0:关闭，默认关闭
+	int face_align_in_detect;					// 是否在人脸检测回调中进行人脸对齐并返回对齐数据，1:开启，0:关闭，默认关闭
+	int face_align_in_liveness;					// 是否在活体检测回调中进行人脸对齐并返回对齐数据，1:开启，0:关闭，默认关闭
+    float pitch_min, pitch_max;                 // 点抬头阈值，pitch_min范围-90~0，默认-30度；   pitch_max范围0~90，默认30度，可根据实际使用需求调整
+    float yaw_min, yaw_max;                     // 摇头阈值，  yaw_min范围-90~0，默认-30度；     yaw_max范围0~90，默认30度，可根据实际使用需求调整
+    float roll_min, roll_max;                   // 摆头阈值，  roll_min范围-90~0，默认-30度；    roll_max范围0~90，默认30度，可根据实际使用需求调整
+    float clarity;                              // 清晰度阈值，范围(0-1,-1)，默认0.3，设置为-1不开启，可根据实际使用需求调整
+    float skinscore;                            // 肤色阈值，范围(0-1,-1)，默认0.35，设置为-1不开启，可根据实际使用需求调整
+    float confidence;                           // 人脸置信度阈值，范围(0-1,-1)，默认0.55，设置为-1不开启，可根据实际使用需求调整
+    float eyeopen;                              // 睁眼阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.5上下调整
+    float mouthopen;                            // 张嘴阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.5上下调整
+    float occlusion;                            // 遮挡阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.75上下调整
+    float hight_brightness_threshold;           // 太亮阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.9上下调整
+    float low_brightness_threshold;             // 太暗阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.2上下调整
+    float blackspec;                            // 黑框眼镜阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.5上下调整
+    float sunglass;                             // 墨镜阈值，范围(0-1,-1)，默认-1不开启，如非有相关需求使用默认值即可，开启后会增加耗时，如需设置建议在0.5上下调整
+	float proceduremask;						// 是否检测口罩分数: 1检测，-1不检测
+	float hat;									// 是否检测口罩分数: 1检测，-1不检测
+	int gender;								// 是否检测性别分数: 1检测，-1不检测
+	int age;									// 是否检测[年龄]: 1检测，-1不检测
+	int emotion;								// 是否检测[表情]: 1检测，-1不检测
+	int race;									// 是否检测[种族]: 1检测，-1不检测
+} CWFaceParam;
+
+
 void test(device &dev)
 {
 	cout << dev.b<<endl;
@@ -100,6 +133,25 @@ int main()
 	prininf(boot1);
 	prininf1(&boot1);
 
+
+	void *buf = malloc(sizeof(long));
+	if(buf == NULL){
+		
+		cout<< "malloc failed "<<endl;
+		return -1;
+
+	}
+	long b = 111111;
+
+	memcpy(buf,&b,sizeof(long));
+
+	cout<<"buf = "<<(long*)buf<<endl;
+	long a;
+	memset(&a,0,sizeof(long));
+	memcpy(&a,buf,sizeof(void*));
+	cout<< "mcpy ls "<<a<<endl;
+	free(buf);
+	buf = NULL;
 ///////////////////////////////
 	device *dev = new soc();
 	dev->fun1();
@@ -113,6 +165,9 @@ int main()
 	cout <<num<<endl;
 	int num2 = device::getdev();//依然还是 88888 
 	cout <<num<<endl; 
-
+/////////////////////////////
+CWFaceParam pa ={1};
+pa.race = 99900;
+cout<<pa.race<<endl;
 	return 0;
 }

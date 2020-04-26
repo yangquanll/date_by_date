@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 using namespace std;
 /*
 class Base
@@ -33,6 +34,16 @@ public:
        void print(){cout<<"Derived"<<endl;}
 };
 
+void tst(int b ,char *y ,void *q)
+{
+	
+	cout<< b<<endl;
+	cout<<y<<endl;
+	cout<<sizeof(q)<<endl;
+	cout<<strlen((char*)q)<<endl;
+
+}
+
 int main()
 {
        Base *point=new Derived();
@@ -42,4 +53,7 @@ int main()
 	   	int &k =i;
 		k =j;
 		cout << k << j << i <<endl;
+		const char * ppoint ="123456789";
+
+		tst(6,"yq",(void*)ppoint);
 }
