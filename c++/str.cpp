@@ -99,8 +99,15 @@ typedef struct CWFaceParam_t
 	int age;									// 是否检测[年龄]: 1检测，-1不检测
 	int emotion;								// 是否检测[表情]: 1检测，-1不检测
 	int race;									// 是否检测[种族]: 1检测，-1不检测
-} CWFaceParam;
+}CWFaceParam;
 
+
+extern"C" CWFaceParam __gCt = {
+.hat = 2.8888,
+.emotion = 777,
+.face_align_in_detect = 66666,
+
+};
 
 void test(device &dev)
 {
@@ -108,6 +115,13 @@ void test(device &dev)
 }
 
  int device::len; //使用前先定义 static
+
+void ts(CWFaceParam_t *ct)
+{
+	cout<<ct->roi_y<<endl;
+	cout<<ct->roi_x<<endl;
+	cout<<ct->age<<endl;
+}
 
 int main()
 { 	string yq;
@@ -166,8 +180,18 @@ int main()
 	int num2 = device::getdev();//依然还是 88888 
 	cout <<num<<endl; 
 /////////////////////////////
-CWFaceParam pa ={1};
+CWFaceParam pa ={1,2,3,4};
 pa.race = 99900;
 cout<<pa.race<<endl;
+cout<<pa.roi_y<<endl;
 	return 0;
+/////////////////////////
+
+ts(Cttt);
+
+
+
+
+
+
 }
