@@ -39,6 +39,8 @@ struct fun_ops fuops = {
 	.fun3 = sfun3,
 };
 
+#if 0
+
 int main(int argc,  char* argv[])
 {
 	int g;
@@ -73,3 +75,4 @@ int main(int argc,  char* argv[])
 
 	}
 	}
+#endif

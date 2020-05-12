@@ -1,8 +1,10 @@
-#include "comm.h"
+#include "yq.h"
+#include <stdio.h>
+
 
 int main()
 {
-	int shmid = CreateShm(4096);
+	int shmid = CreatShm(4666);
 
 	char *addr = shmat(shmid,NULL,0);
 	sleep(2);

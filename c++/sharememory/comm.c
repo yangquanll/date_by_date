@@ -37,6 +37,11 @@ static int GetShm(int size)
 	return CommShm(size,IPC_CREAT);
 }
 
+void deg()
+{
+	printf("link ok \n");
+
+
 /*
 int main()
 {
