@@ -3,13 +3,13 @@ GCC = gcc #-pthread 编译 pthread
 G++ = g++ -pthread 
 
 #set compiler switch
-CFLAG = -Wall -c # -Wall显示所有警告，-g 可调试，-c编译
+CFLAG = -Wall -c -g # -Wall显示所有警告，-g 可调试，-c编译
 
-#set source tree
-INCLUDE = ./src/inc/
-SRC_DIR = ./src/comm/ 
-SRC_SR = ./src/client/ 
-SRC_RR = ./src/server/ 
+#set source tree 切勿这样 ./src/inc/ 后面不加'/'!!!!!
+INCLUDE = ./src/inc
+SRC_DIR = ./src/comm
+SRC_SR = ./src/client
+SRC_RR = ./src/server
 Allcpp = $(shell find -name *.c) # 使用Linux 命令要用 $(shell cmd) =  AllDirs + foreach
 AllDirs := $(shell ls -R | grep '^\./.*:$$' | awk '{gsub(":","");print}')
 
@@ -64,6 +64,9 @@ ECHO:
 	@echo $(AllDirs)
 	@echo "=========="
 	@echo $(SRC_C)	
+	@echo $(SRC_S)
+	@echo $(SRC_R)
+	@echo $(SRC)
 	@echo $@
 
 all: send receive ECHO

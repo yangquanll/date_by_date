@@ -64,6 +64,9 @@ ECHO:
 	@echo $(AllDirs)
 	@echo "=========="
 	@echo $(SRC_C)	
+	@echo $(SRC_S)	
+	@echo $(SRC_R)	
+	@echo $(SRC)	
 	@echo $@
 
 all: send receive ECHO
