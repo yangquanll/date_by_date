@@ -1,0 +1,35 @@
+#include"yq.h"
+#include"struct_fuc.c"
+
+int main()
+{
+	struct parm pm ={
+		.a = 11,
+		.b = 22,
+		.buf = "wwww",
+		.vi = "qqq",
+		.max = "dddd",
+		.ff = 111111111,
+	},*spam = &pm;
+
+	tst();
+	int shmid = GetShm(4096);
+	sleep(1);
+	spam = (struct parm*)shmat(shmid,NULL,0);
+	sleep(2);
+	
+	shmdt(&spam);
+#if 0	
+	int i = 0;
+	while(i < 26)
+	{
+		addr[i] = 'A' + i;
+		i++;
+		addr[i] = 0;
+		sleep(1);
+	}
+	shmdt(addr);
+#endif
+	sleep(2);
+	return 0;
+}

@@ -41,10 +41,10 @@ OBJS_DIR_RECV = $(addprefix $(OBJOUTPUT),$(notdir $(OBJS_RECV))) #addprefix  组
 
 
 
-send:$(OBJS_SEND)$
+server:$(OBJS_SEND)$
 	$(GCC) $(OBJS_DIR_SEND) -o $(BINOUTPUT)$@
 
-receive:$(OBJS_RECV)$
+client:$(OBJS_RECV)$
 	$(GCC) $(OBJS_DIR_RECV) -o $(BINOUTPUT)$@
 
 clean:
@@ -69,6 +69,6 @@ ECHO:
 	@echo $(SRC)
 	@echo $@
 
-all: send receive ECHO
+all: server client ECHO
 
 .PHONY : all

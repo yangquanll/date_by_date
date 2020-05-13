@@ -39,8 +39,23 @@ struct fun_ops fuops = {
 	.fun3 = sfun3,
 };
 
-#if 0
+struct parm{
 
+	int a,b;
+
+	char *buf;
+
+	void *vi;
+
+	char max[1024];
+
+	float ff;
+};
+
+
+
+
+#if 0
 int main(int argc,  char* argv[])
 {
 	int g;
